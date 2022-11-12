@@ -1,0 +1,8 @@
+{
+    "configuration": "PSRAM=disabled,PartitionScheme=min_spiffs,CPUFreq=240,FlashMode=qio,FlashFreq=80,FlashSize=4M,UploadSpeed=921600,DebugLevel=none",
+    "board": "esp32:esp32:esp32",
+    "port": "COM12",
+    "output": "../build/Sigma_Matrix_K5",
+    "programmer": "esp32:esptool",
+    "sketch": "Sigma_Matrix_K5.ino"
+}
