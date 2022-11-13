@@ -1,18 +1,6 @@
-/* @file MultiKey.ino
-|| @version 1.0
-|| @author Mark Stanley
-|| @contact mstanley@technologist.com
-||
-|| @description
-|| | The latest version, 3.0, of the keypad library supports up to 10
-|| | active keys all being pressed at the same time. This sketch is an
-|| | example of how you can get multiple key presses from a keypad or
-|| | keyboard.
-|| #
-*/
-#include "Secret.h";
-#include "Settings.h";
-#include "Layout.h";
+#include "Secret.h"
+#include "Settings.h"
+#include "Layout.h"
 #include <Arduino.h>
 #include <WiFi.h>
 #include <HTTPClient.h>
@@ -22,12 +10,10 @@
 #include <BleKeyboard.h>          // https://github.com/T-vK/ESP32-BLE-Keyboard
 #include <Adafruit_SSD1306.h>     // https://github.com/adafruit/Adafruit_SSD1306 https://github.com/adafruit/Adafruit-GFX-Library
 #include <SchedTask.h>            // https://github.com/Nospampls/SchedTask
-#include "AiEsp32RotaryEncoder.h" //https://github.com/igorantolic/ai-esp32-rotary-encoder
+#include "AiEsp32RotaryEncoder.h" // https://github.com/igorantolic/ai-esp32-rotary-encoder
 
 //#include <ezButton.h>             // https://github.com/ArduinoGetStarted/button
 
-void DispOff();
-SchedTask taskDispOff(NEVER, ONESHOT, DispOff);
 const byte ledPin = 2;
 int Shift = 0;
 int sShift = 0;
@@ -39,22 +25,12 @@ int LayerMax = 3;
 int macroSet = 0;
 int macroSetMax = 3;
 int dispSleepT = 5000;
-unsigned long loopCount;
-unsigned long startTime;
 bool MQTT = true;
 String Shifted;
 String Unshifted;
-
-#define ROTARY_ENCODER_A_PIN 34      // CLK
-#define ROTARY_ENCODER_B_PIN 35      // DT
-#define ROTARY_ENCODER_BUTTON_PIN 32 // SW
-#define ROTARY_ENCODER_STEPS 4
-AiEsp32RotaryEncoder rotaryEncoder = AiEsp32RotaryEncoder(ROTARY_ENCODER_A_PIN, ROTARY_ENCODER_B_PIN, ROTARY_ENCODER_BUTTON_PIN, -1, ROTARY_ENCODER_STEPS);
-
-void IRAM_ATTR readEncoderISR()
-{
-  rotaryEncoder.readEncoder_ISR();
-}
+String msg; // Serial message for key PRESSED HOLD RELASED IDLE
+unsigned long loopCount;
+unsigned long startTime;
 
 const byte ROWS = 5; // four rows
 const byte COLS = 5; // three columns
@@ -68,31 +44,29 @@ char keys[ROWS][COLS] = {
 byte rowPins[ROWS] = {33, 25, 26, 27, 13}; // connect to the row pinouts of the Keypad1
 byte colPins[COLS] = {19, 18, 17, 16, 4};  // connect to the column pinouts of the Keypad1
 
+
+SchedTask taskDispOff(NEVER, ONESHOT, DispOff);
+
+AiEsp32RotaryEncoder rotaryEncoder = AiEsp32RotaryEncoder(ROTARY_ENCODER_A_PIN, ROTARY_ENCODER_B_PIN, ROTARY_ENCODER_BUTTON_PIN, -1, ROTARY_ENCODER_STEPS);
+
 Keypad Keypad1 = Keypad(makeKeymap(keys), rowPins, colPins, ROWS, COLS);
 
-String msg; // Serial message for key PRESSED HOLD RELASED IDLE
-
-#define SCREEN_WIDTH 128    // OLED display width, in pixels
-#define SCREEN_HEIGHT 64    // OLED display height, in pixels
-#define OLED_RESET -1       // Reset pin # (or -1 if sharing Arduino reset pin)
-#define SCREEN_ADDRESS 0x3C ///< See datasheet for Address; 0x3D for 128x64, 0x3C for 128x32
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
-#define I2C_SDA 21
-#define I2C_SCL 22
-
-char KeyMQTT[50];
-const char sendKey = '*'; // Keypress to initialize send to MQTT
-
 BleKeyboard bleKeyboard("Sigma_Matrix_K5", "Sigma", 100);
-
-/* Keyboard constants  Change to suit your Arduino
-   define pins used for data and clock from keyboard */
 
 String serverPath = "";
 
 WiFiClient espClientK5;
+
 PubSubClient mqttclient(espClientK5);
+
+void DispOff();
+
+void IRAM_ATTR readEncoderISR()
+{
+  rotaryEncoder.readEncoder_ISR();
+}
 
 void wificn()
 { // Connect to WiFi
@@ -5428,7 +5402,7 @@ void loop()
             digitalWrite(ledPin, HIGH);
             break;
           }
-           if (Keypad1.key[i].kchar == 'F')         
+          if (Keypad1.key[i].kchar == 'F')
           {
             sShift = 1;
             digitalWrite(ledPin, HIGH);
