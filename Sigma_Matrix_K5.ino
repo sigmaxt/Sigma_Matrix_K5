@@ -1,3 +1,5 @@
+
+
 #include "Secret.h"
 #include "Settings.h"
 #include "Layout.h"
@@ -13,10 +15,11 @@
 #include "AiEsp32RotaryEncoder.h" // https://github.com/igorantolic/ai-esp32-rotary-encoder
 
 //#include <ezButton.h>             // https://github.com/ArduinoGetStarted/button
-
+int i;
 const byte ledPin = 2;
 int Shift = 0;
-int sShift = 0;
+int aShift = 0;
+int bShift = 0;
 int Help = 0;
 int Mode = 0;
 int ModeMax = 3;
@@ -40,11 +43,11 @@ char keys[ROWS][COLS] = {
     {'7', '8', '9', 'C', 'K'},
     {'*', '0', '#', 'D', 'J'},
     {'E', 'F', 'G', 'H', 'I'}};
-
+String fullKey;
 byte rowPins[ROWS] = {33, 25, 26, 27, 13}; // connect to the row pinouts of the Keypad1
 byte colPins[COLS] = {19, 18, 17, 16, 4};  // connect to the column pinouts of the Keypad1
 
-
+void DispOff();
 SchedTask taskDispOff(NEVER, ONESHOT, DispOff);
 
 AiEsp32RotaryEncoder rotaryEncoder = AiEsp32RotaryEncoder(ROTARY_ENCODER_A_PIN, ROTARY_ENCODER_B_PIN, ROTARY_ENCODER_BUTTON_PIN, -1, ROTARY_ENCODER_STEPS);
@@ -61,15 +64,13 @@ WiFiClient espClientK5;
 
 PubSubClient mqttclient(espClientK5);
 
-void DispOff();
-
 void IRAM_ATTR readEncoderISR()
 {
   rotaryEncoder.readEncoder_ISR();
 }
 
-void wificn()
-{ // Connect to WiFi
+void wificn() // Connect to WiFi
+{
   if (WiFi.status() != WL_CONNECTED)
   {
     WiFi.begin(ssid, password);
@@ -91,31 +92,30 @@ void wificn()
   }
 }
 
-void mqttcn()
-{ // Connect to MQTT
+void mqttcn() // Connect to MQTT
+{
   mqttclient.setServer(mqttServer, mqttPort);
   mqttclient.setCallback(mqttcallback);
 
-  // while (!mqttclient.connected())
-  //{
-  Serial.println("Connecting to MQTT...");
-
-  if (mqttclient.connect("Keypad Client", mqttUser, mqttPassword))
+  while (!mqttclient.connected())
   {
-    mqttclient.subscribe("esp32/output");
-    Serial.println("connected");
-    mqttclient.loop();
-  }
-  else
-  {
+    Serial.println("Connecting to MQTT...");
 
-    Serial.print("failed with state ");
-    Serial.print(mqttclient.state());
+    if (mqttclient.connect("Keypad Client", mqttUser, mqttPassword))
+    {
+      mqttclient.subscribe("esp32/output");
+      Serial.println("connected");
+      mqttclient.loop();
+    }
+    else
+    {
+      Serial.print("failed with state ");
+      Serial.print(mqttclient.state());
 
-    delay(2000);
+      delay(2000);
+    }
+    mqttclient.publish("MatrixR/LWT", "1");
   }
-  mqttclient.publish("MatrixR/LWT", "1");
-  //}
 }
 
 void mqttcallback(char *topic, byte *message, unsigned int length)
@@ -5211,6 +5211,104 @@ void mainSwitch(char key)
   }
 }
 
+void mode()
+{
+  switch (Mode) // scan Keypad1
+  {
+  case 0: // mainSwitch Mode
+  {
+      mainSwitch(Keypad1.key[i].kchar);
+  }
+  break;
+
+  case 1: //  Single KEY Mode
+  {
+    char Key1 = Keypad1.key[i].kchar;
+    fullKey = Key1;
+    fullKey.toCharArray(KeyMQTT, fullKey.length() + 1);
+    if (Key1 != NULL)
+    {
+      mqttclient.publish("/MatrixR/KEY", KeyMQTT);
+      Serial.print("Sent key:\t");
+      Serial.println(Key1);
+
+      display.clearDisplay();
+      display.setCursor(0, 0);
+      display.setTextSize(2);
+      display.setTextColor(SSD1306_WHITE);
+      display.print("Sent:");
+      display.print(Key1);
+      display.println(" To:");
+      display.println("");
+      display.println("/MatrixR  /KEY");
+      display.display();
+      taskDispOff.setNext(dispSleepT);
+    }
+  }
+  break;
+
+  case 2: // Keycode
+  {
+    char Key1 = Keypad1.key[i].kchar;
+    if (Key1 == sendKey)
+    {
+      fullKey.toCharArray(KeyMQTT, fullKey.length() + 1);
+      mqttclient.publish("MatrixR/Code", KeyMQTT);
+      Serial.print("Code key:\t");
+      Serial.println(fullKey);
+      display.clearDisplay();
+      display.setCursor(0, 0);
+      display.setTextSize(2);
+      display.setTextColor(SSD1306_WHITE);
+      display.println(fullKey);
+      display.println("Sent To:");
+      display.println("/MatrixR /Code");
+      display.display();
+      fullKey = "";
+      taskDispOff.setNext(dispSleepT);
+    }
+    else if (Key1 != NULL)
+    {
+      fullKey += Key1;
+      Serial.print("Current keys:\t");
+      Serial.println(fullKey);
+      display.clearDisplay();
+      display.setCursor(0, 0);
+      display.setTextSize(2);
+      display.setTextColor(SSD1306_WHITE);
+      display.println("Code:");
+      display.println("");
+      display.println(fullKey);
+      display.display();
+      taskDispOff.setNext(-1);
+    }
+  }
+  break;
+
+  case 3: // Keypad *************** Not Working ************
+  {
+
+    char Key1 = Keypad1.getKey();
+    if (Key1 != NULL)
+    {
+      //          bleKeyboard.press(KEY1);
+      //          delay(100);
+      //          bleKeyboard.releaseAll();
+      display.clearDisplay();
+      display.setCursor(0, 0);
+      display.setTextSize(2);
+      display.setTextColor(SSD1306_WHITE);
+      display.print("Pressed: ");
+      display.println(Key1);
+      display.display();
+      taskDispOff.setNext(dispSleepT);
+    }
+  }
+  break;
+  }
+}
+
+
 void modeSet() // Set Mode and macroSet.
 {
   Serial.println("modeSet");
@@ -5384,6 +5482,7 @@ void loop()
     loopCount = 0;
   }
 
+
   // Fills Keypad1.key[ ] array with up-to 10 active keys.
   // Returns true if there are ANY active keys.
   if (Keypad1.getKeys())
@@ -5394,6 +5493,7 @@ void loop()
       {
         switch (Keypad1.key[i].kstate)
         { // Report active key state : IDLE, PRESSED, HOLD, or RELEASED
+
         case PRESSED:
           msg = " PRESSED. ";
           if (Keypad1.key[i].kchar == 'E')
@@ -5404,12 +5504,28 @@ void loop()
           }
           if (Keypad1.key[i].kchar == 'F')
           {
-            sShift = 1;
+            aShift = 1;
             digitalWrite(ledPin, HIGH);
             break;
           }
-
+          if (Keypad1.key[i].kchar == 'G')
+          {
+            bShift = 1;
+            digitalWrite(ledPin, HIGH);
+            break;
+          }
+          if (Keypad1.key[i].kchar == 'I')
+          {
+            Mode = ++Mode;
+            if (Mode > ModeMax)
+            {
+              Mode = 0;
+            }
+            UpdateOled(Mode, macroSet, Layer);
+            break;
+          }
           break;
+
         case HOLD:
           msg = " HOLD. ";
           break;
@@ -5422,12 +5538,23 @@ void loop()
           }
           if (Keypad1.key[i].kchar == 'F')
           {
-            msg = " sShift RELEASED. ";
+            msg = " aShift RELEASED. ";
             break;
           }
-          mainSwitch(Keypad1.key[i].kchar);
+          if (Keypad1.key[i].kchar == 'G')
+          {
+            msg = " bShift RELEASED. ";
+            break;
+          }
+          if (Keypad1.key[i].kchar == 'I')
+          {
+            msg = " Mode RELEASED. ";
+            break;
+          }
+          mode();
           msg = " RELEASED. ";
           break;
+
         case IDLE:
           msg = " IDLE.";
           if (Keypad1.key[i].kchar == 'E')
@@ -5438,8 +5565,20 @@ void loop()
           }
           if (Keypad1.key[i].kchar == 'F')
           {
-            sShift = 0;
-            digitalWrite(ledPin, LOW);
+            aShift = 0;
+            digitalWrite(ledPin, 0);
+            break;
+          }
+          if (Keypad1.key[i].kchar == 'G')
+          {
+            bShift = 0;
+            digitalWrite(ledPin, 0);
+            break;
+          }
+          if (Keypad1.key[i].kchar == 'I')
+          {
+            Serial.print("Mode: ");
+            Serial.println(Mode);
             break;
           }
         }
