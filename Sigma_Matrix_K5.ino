@@ -1,5 +1,3 @@
-
-
 #include "Secret.h"
 #include "Settings.h"
 #include "Layout.h"
@@ -13,7 +11,6 @@
 #include <Adafruit_SSD1306.h>     // https://github.com/adafruit/Adafruit_SSD1306 https://github.com/adafruit/Adafruit-GFX-Library
 #include <SchedTask.h>            // https://github.com/Nospampls/SchedTask
 #include "AiEsp32RotaryEncoder.h" // https://github.com/igorantolic/ai-esp32-rotary-encoder
-
 //#include <ezButton.h>             // https://github.com/ArduinoGetStarted/button
 int i;
 const byte ledPin = 2;
@@ -29,11 +26,13 @@ int macroSet = 0;
 int macroSetMax = 3;
 int dispSleepT = 5000;
 bool MQTT = true;
+unsigned long loopCount;
+unsigned long startTime;
+String fullKey;
 String Shifted;
 String Unshifted;
 String msg; // Serial message for key PRESSED HOLD RELASED IDLE
-unsigned long loopCount;
-unsigned long startTime;
+String serverPath = "";
 
 const byte ROWS = 5; // four rows
 const byte COLS = 5; // three columns
@@ -43,25 +42,16 @@ char keys[ROWS][COLS] = {
     {'7', '8', '9', 'C', 'K'},
     {'*', '0', '#', 'D', 'J'},
     {'E', 'F', 'G', 'H', 'I'}};
-String fullKey;
 byte rowPins[ROWS] = {33, 25, 26, 27, 13}; // connect to the row pinouts of the Keypad1
 byte colPins[COLS] = {19, 18, 17, 16, 4};  // connect to the column pinouts of the Keypad1
 
 void DispOff();
 SchedTask taskDispOff(NEVER, ONESHOT, DispOff);
-
 AiEsp32RotaryEncoder rotaryEncoder = AiEsp32RotaryEncoder(ROTARY_ENCODER_A_PIN, ROTARY_ENCODER_B_PIN, ROTARY_ENCODER_BUTTON_PIN, -1, ROTARY_ENCODER_STEPS);
-
 Keypad Keypad1 = Keypad(makeKeymap(keys), rowPins, colPins, ROWS, COLS);
-
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
-
 BleKeyboard bleKeyboard("Sigma_Matrix_K5", "Sigma", 100);
-
-String serverPath = "";
-
 WiFiClient espClientK5;
-
 PubSubClient mqttclient(espClientK5);
 
 void IRAM_ATTR readEncoderISR()
@@ -5217,7 +5207,7 @@ void mode()
   {
   case 0: // mainSwitch Mode
   {
-      mainSwitch(Keypad1.key[i].kchar);
+    mainSwitch(Keypad1.key[i].kchar);
   }
   break;
 
@@ -5285,15 +5275,15 @@ void mode()
   }
   break;
 
-  case 3: // Keypad *************** Not Working ************
+  case 3: // Keypad
   {
 
-    char Key1 = Keypad1.getKey();
+    char Key1 = Keypad1.key[i].kchar;
     if (Key1 != NULL)
     {
-      //          bleKeyboard.press(KEY1);
-      //          delay(100);
-      //          bleKeyboard.releaseAll();
+      bleKeyboard.press(Key1);
+      delay(50);
+      bleKeyboard.releaseAll();
       display.clearDisplay();
       display.setCursor(0, 0);
       display.setTextSize(2);
@@ -5307,7 +5297,6 @@ void mode()
   break;
   }
 }
-
 
 void modeSet() // Set Mode and macroSet.
 {
@@ -5481,7 +5470,6 @@ void loop()
     startTime = millis();
     loopCount = 0;
   }
-
 
   // Fills Keypad1.key[ ] array with up-to 10 active keys.
   // Returns true if there are ANY active keys.
