@@ -1,9 +1,5 @@
-<<<<<<< HEAD
 
 
-=======
-//Master
->>>>>>> 9852d2952e91bfefd8d784125e17f4024c40ca2f
 #include "Secret.h"
 #include "Settings.h"
 #include "Layout.h"
