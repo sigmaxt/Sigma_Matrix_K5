@@ -1,5 +1,5 @@
-#include "Secret.h"
 #include "Settings.h"
+#include "Secret.h"
 #include "Layout.h"
 #include <Arduino.h>
 #include <WiFi.h>
@@ -169,11 +169,6 @@ void httpReq(String serverPath)
 
 void mode()
 {
-
-    for (int x = 0; x < 10; x++) // Scan the whole key list.
-    {
-        Serial.println(Keypad1.key[i].kchar);
-    }
     if (Keypad1.key[i].kchar == 'E' || Keypad1.key[i].kchar == 'F' || Keypad1.key[i].kchar == 'G' || Keypad1.key[i].kchar == 'H' || Keypad1.key[i].kchar == 'I')
     {
         return;
@@ -617,10 +612,10 @@ void loop()
 {
     SchedBase::dispatcher();
     loopCount++;
-    if ((millis() - startTime) > 30000)
+    if ((millis() - startTime) > 5000)
     {
         Serial.print("Average loops per second = ");
-        Serial.println(loopCount / 30);
+        Serial.println(loopCount / 5);
         startTime = millis();
         loopCount = 0;
     }
