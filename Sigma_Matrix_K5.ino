@@ -1,5 +1,3 @@
-
-
 #include "Secret.h"
 #include "Settings.h"
 #include "Layout.h"
@@ -172,10 +170,10 @@ void httpReq(String serverPath)
 void mode()
 {
 
-            for (int x = 0; x < 10; x++) // Scan the whole key list.
-        {
+    for (int x = 0; x < 10; x++) // Scan the whole key list.
+    {
         Serial.println(Keypad1.key[i].kchar);
-        }
+    }
     if (Keypad1.key[i].kchar == 'E' || Keypad1.key[i].kchar == 'F' || Keypad1.key[i].kchar == 'G' || Keypad1.key[i].kchar == 'H' || Keypad1.key[i].kchar == 'I')
     {
         return;
