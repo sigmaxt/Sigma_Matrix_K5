@@ -629,30 +629,33 @@ void loop()
         {
             if (Keypad1.key[i].stateChanged) // Only find keys that have changed state.
             {
-                switch (Keypad1.key[i].kstate)
-                { // Report active key state : IDLE, PRESSED, HOLD, or RELEASED
+                switch (Keypad1.key[i].kstate) // Report active key state : IDLE, PRESSED, HOLD, or RELEASED
+                {
 
                 case PRESSED:
+                {
                     msg = " PRESSED. ";
-                    if (Keypad1.key[i].kchar == 'E')
+                    switch (Keypad1.key[i].kchar)
+                    {
+                    case 'E':
                     {
                         Shift = 1;
                         digitalWrite(ledPin, HIGH);
                         break;
                     }
-                    if (Keypad1.key[i].kchar == 'F')
+                    case 'F':
                     {
                         Shift = 2;
                         digitalWrite(ledPin, HIGH);
                         break;
                     }
-                    if (Keypad1.key[i].kchar == 'G')
+                    case 'G':
                     {
                         Shift = 3;
                         digitalWrite(ledPin, HIGH);
                         break;
                     }
-                    if (Keypad1.key[i].kchar == 'I')
+                    case 'I':
                     {
                         Mode = ++Mode;
                         if (Mode > ModeMax)
@@ -662,35 +665,39 @@ void loop()
                         UpdateOled(Mode);
                         break;
                     }
+                    }
                     break;
-
+                }
                     // case HOLD:
                     //   msg = " HOLD. ";
                     //   break;
 
                 case RELEASED:
                     msg = " RELEASED. ";
-                    if (Keypad1.key[i].kchar == 'E')
+                    switch (Keypad1.key[i].kchar)
+                    {
+                    case 'E':
                     {
                         Shift = 0;
                         digitalWrite(ledPin, LOW);
                         break;
                     }
-                    if (Keypad1.key[i].kchar == 'F')
+                    case 'F':
                     {
                         Shift = 0;
                         digitalWrite(ledPin, LOW);
                         break;
                     }
-                    if (Keypad1.key[i].kchar == 'G')
+                    case 'G':
                     {
                         Shift = 0;
                         digitalWrite(ledPin, LOW);
                         break;
                     }
-                    if (Keypad1.key[i].kchar == 'I')
+                    case 'I':
                     {
                         break;
+                    }
                     }
                     mode();
                     break;
@@ -714,26 +721,27 @@ void loop()
         }
     }
 
-    if (rotaryEncoder.encoderChanged())
-    {
-        Serial.println(rotaryEncoder.readEncoder());
-    }
-    if (rotaryEncoder.isEncoderButtonClicked())
-    {
+if (rotaryEncoder.encoderChanged())
+{
+    Serial.println(rotaryEncoder.readEncoder());
+}
+if (rotaryEncoder.isEncoderButtonClicked())
+{
 
-        Serial.println("button pressed");
-    }
+    Serial.println("button pressed");
+}
 
-    if (WiFi.status() != WL_CONNECTED)
+if (WiFi.status() != WL_CONNECTED)
+{
+    Serial.println("Going to wificn");
+    wificn();
+}
+
+if (MQTT)
+    if (!mqttclient.loop())
     {
-        Serial.println("Going to wificn");
-        wificn();
+        mqttcn();
     }
-
-    if (MQTT)
-        if (!mqttclient.loop())
-        {
-            mqttcn();
-        }
 
 } // End loops
+// xxx
