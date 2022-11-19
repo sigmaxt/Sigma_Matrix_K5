@@ -25,7 +25,7 @@ String Unshifted;
 String msg; // Serial message for key PRESSED HOLD RELASED IDLE
 unsigned long loopCount;
 unsigned long startTime;
-
+char KeyPressed;
 const byte ROWS = 5; // four rows
 const byte COLS = 5; // three columns
 char keys[ROWS][COLS] = {
@@ -169,15 +169,12 @@ void httpReq(String serverPath)
 
 void mode()
 {
-    if (Keypad1.key[i].kchar == 'E' || Keypad1.key[i].kchar == 'F' || Keypad1.key[i].kchar == 'G' || Keypad1.key[i].kchar == 'H' || Keypad1.key[i].kchar == 'I')
-    {
-        return;
-    }
+
     switch (Mode)
     {
     case 0: // Macro Mode
     {
-        switch (Keypad1.key[i].kchar)
+        switch (KeyPressed)
         {
         case '1': //        Shift: Compile Sketch | else: Upload Sketch
         {
@@ -203,10 +200,12 @@ void mode()
             }
             case 2:
             {
+                Serial.println("Shift case 2");
                 break;
             }
             case 3:
             {
+                Serial.println("Shift case 3");
                 break;
             }
             }
@@ -426,12 +425,6 @@ void mode()
         }
         break;
         }
-
-        Serial.println("-----------------");
-        Serial.println("In Mode 0");
-        Serial.print("kchar is:");
-        Serial.println(Keypad1.key[i].kchar);
-        Serial.println("-----------------");
         break;
     }
 
@@ -665,6 +658,12 @@ void loop()
                         UpdateOled(Mode);
                         break;
                     }
+                    default:
+                    {
+                        KeyPressed = Keypad1.key[i].kchar;
+                        mode();
+                        break;
+                    }
                     }
                     break;
                 }
@@ -699,49 +698,35 @@ void loop()
                         break;
                     }
                     }
-                    mode();
                     break;
 
                     // case IDLE:
                     //   msg = " IDLE.";
                     //   break;
                 }
-                Serial.println("-----------------");
-                Serial.print("Key: ");
-                Serial.print(Keypad1.key[i].kchar);
-                Serial.println(msg);
-                Serial.print("Shift: ");
-                Serial.println(Shift);
-                Serial.print("Mode: ");
-                Serial.println(Mode);
-                Serial.print("Keycode: ");
-                Serial.println(Keypad1.key[i].kcode);
-                Serial.println("-----------------");
             }
         }
     }
-
-if (rotaryEncoder.encoderChanged())
-{
-    Serial.println(rotaryEncoder.readEncoder());
-}
-if (rotaryEncoder.isEncoderButtonClicked())
-{
-
-    Serial.println("button pressed");
-}
-
-if (WiFi.status() != WL_CONNECTED)
-{
-    Serial.println("Going to wificn");
-    wificn();
-}
-
-if (MQTT)
-    if (!mqttclient.loop())
+    if (rotaryEncoder.encoderChanged())
     {
-        mqttcn();
+        Serial.println(rotaryEncoder.readEncoder());
+    }
+    if (rotaryEncoder.isEncoderButtonClicked())
+    {
+
+        Serial.println("button pressed");
     }
 
+    if (WiFi.status() != WL_CONNECTED)
+    {
+        Serial.println("Going to wificn");
+        wificn();
+    }
+
+    if (MQTT)
+        if (!mqttclient.loop())
+        {
+            mqttcn();
+        }
+
 } // End loops
-// xxx
