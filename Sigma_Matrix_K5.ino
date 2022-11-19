@@ -176,7 +176,7 @@ void mode()
     {
         switch (KeyPressed)
         {
-        case '1': //        Shift: Compile Sketch | else: Upload Sketch
+        case '1': //        Upload Sketch | Shift 1: Compile Sketch  | Shift 2: Open | Shift 3: Open
         {
             switch (Shift)
             {
@@ -211,199 +211,514 @@ void mode()
             }
         }
         break;
-        case '2': //        Shift: Expand | else: Collapse Code in vscode
+        case '2': //        Collapse Code in vscode | Shift 1: Expand Code in vscode | Shift 2:  Open | Shift 3: Open
         {
-            if (Shift == 1)
+            switch (Shift)
             {
-                bleKeyboard.press(KEY_LEFT_CTRL);
-                bleKeyboard.press('k');
-                bleKeyboard.press('j');
-                delay(100);
-                bleKeyboard.releaseAll();
-            }
-            else
+            case 0:
             {
                 bleKeyboard.press(KEY_LEFT_CTRL);
                 bleKeyboard.press('k');
                 bleKeyboard.press('0');
                 delay(100);
                 bleKeyboard.releaseAll();
+                break;
             }
-        }
-        break;
-        case '3': //        Shift: Uncomment Selection | else: Comment Selecttion
-        {
-            if (Shift == 1)
+            case 1:
             {
                 bleKeyboard.press(KEY_LEFT_CTRL);
                 bleKeyboard.press('k');
-                bleKeyboard.press('u');
+                bleKeyboard.press('j');
                 delay(100);
                 bleKeyboard.releaseAll();
+                break;
             }
-            else
+            case 2:
+            {
+
+                break;
+            }
+            case 3:
+            {
+
+                break;
+            }
+            }
+        }
+        break;
+        case '3': //        Comment Selecttion | Shift 1: Uncomment Selection | Shift 2:  Open | Shift 3: Open
+        {
+            switch (Shift)
+            {
+            case 0:
             {
                 bleKeyboard.press(KEY_LEFT_CTRL);
                 bleKeyboard.press('k');
                 bleKeyboard.press('c');
                 delay(100);
                 bleKeyboard.releaseAll();
+                break;
+            }
+            case 1:
+            {
+                bleKeyboard.press(KEY_LEFT_CTRL);
+                bleKeyboard.press('k');
+                bleKeyboard.press('u');
+                delay(100);
+                bleKeyboard.releaseAll();
+                break;
+            }
+            case 2:
+            {
+
+                break;
+            }
+            case 3:
+            {
+
+                break;
+            }
             }
         }
         break;
-        case 'A': //        Shift: Bulb-02 Toggle | else: Bulb-01 Toggle
-        {
-            if (Shift == 1)
-            {
-                serverPath = "http://192.168.1.152/control?cmd=event,ToggleMCP";
-                httpReq(serverPath);
-            }
-            else
-            {
-                serverPath = "http://192.168.1.151/control?cmd=event,ToggleMCP";
-                httpReq(serverPath);
-            }
-        }
-        break;
-        case '4': //        Shift: Open | else: Kodi Stop
-        {
-            if (Shift == 1)
-            {
-            }
-            else
-            {
-                mqttclient.publish("/Kodi/CMD", "Stop");
-            }
-        }
-        break;
-        case '5': //        Shift: Kodi Zoom | else: Kodi Play/Pause
-        {
-            if (Shift == 1)
-            {
-                mqttclient.publish("/Kodi/CMD", "Z");
-            }
-            else
-            {
-                mqttclient.publish("/Kodi/CMD", "Pause");
-            }
-        }
-        break;
-        case '6': //        Shift: Leaving | else: Home
-        {
-            if (Shift == 1)
-            {
-                mqttclient.publish("/routines", "0");
-            }
-            else
-            {
-                mqttclient.publish("/routines", "1");
-            }
-        }
-        break;
-        case 'B': //        Shift: Over H 10% | else: Over H 1/0
-        {
-            if (Shift == 1)
-            {
-                mqttclient.publish("/MatrixR/CMD", "13");
-            }
-            else
-            {
-                mqttclient.publish("/MatrixR/CMD", "12");
-            }
-        }
-        break;
-        case '7': //        Shift: Open | else: Kodi_BACKSPACE
-        {
-            if (Shift == 1)
-            {
-            }
-            else
-            {
-                mqttclient.publish("/Kodi/CMD", "Back");
-            }
-        }
-        break;
-        case '8': //        Shift: Seek | else: Kodi_UP_ARROW
-        {
-            if (Shift == 1)
-            {
-                mqttclient.publish("/Kodi/CMD", "bFwd");
-            }
-            else
-            {
-                mqttclient.publish("/Kodi/CMD", "Up");
-            }
-        }
-        break;
-        case '9': //        Shift: Kodi Context Menu | else: Kodi Select
-        {
-            if (Shift == 1)
-            {
-                mqttclient.publish("/Kodi/CMD", "context");
-            }
-            else
-            {
-                mqttclient.publish("/Kodi/CMD", "Select");
-            }
-        }
-        break;
-        case 'C': //        Shift: Outlet-03 Toggle | else: Outlet-08 Toggle
-        {
-            if (Shift == 1)
-            {
-                serverPath = "http://192.168.1.143/control?cmd=event,Toggle";
-                httpReq(serverPath);
-            }
-            else
-            {
-                serverPath = "http://192.168.1.148/control?cmd=event,Toggle";
-                httpReq(serverPath);
-            }
-        }
-        break;
-        case '*': //        Shift: Seek | else: Kodi_LEFT_ARROW
-        {
-            if (Shift == 1)
-            {
-                mqttclient.publish("/Kodi/CMD", "Rew");
-            }
-            else
-            {
-                mqttclient.publish("/Kodi/CMD", "Left");
-            }
-        }
-        break;
-        case '0': //        Shift: Seek | else: Kodi_DOWN_ARROW
-        {
-            if (Shift == 1)
-            {
-                mqttclient.publish("/Kodi/CMD", "bRew");
-            }
-            else
-            {
-                mqttclient.publish("/Kodi/CMD", "Down");
-            }
-        }
-        break;
-        case '#': //        Shift: Seek | else: Kodi_RIGHT_ARROW
-        {
-            if (Shift == 1)
-            {
-                mqttclient.publish("/Kodi/CMD", "Fwd");
-            }
-            else
-            {
-                mqttclient.publish("/Kodi/CMD", "Right");
-            }
-        }
-        break;
-        case 'D': //        Shift: Open | else: Outlet-05 Toggle
+        case 'A': //        Bulb-01 Toggle | Shift 1: Bulb-02 Toggle | Shift 2:  Open | Shift 3: Open
         {
             switch (Shift)
             {
             case 0:
             {
-                Serial.println("D Shit 0");
+                serverPath = "http://192.168.1.151/control?cmd=event,ToggleMCP";
+                httpReq(serverPath);
+                break;
+            }
+            case 1:
+            {
+                serverPath = "http://192.168.1.152/control?cmd=event,ToggleMCP";
+                httpReq(serverPath);
+                break;
+            }
+            case 2:
+            {
+                serverPath = "http://192.168.1.153/control?cmd=event,ToggleMCP";
+                httpReq(serverPath);
+                break;
+            }
+            case 3:
+            {
+                serverPath = "http://192.168.1.143/control?cmd=event,Toggle";
+                httpReq(serverPath);
+                break;
+            }
+            }
+        }
+        break;
+        case 'M': //        Open | Shift 1: Open | Shift 2: Open | Shift 3: Open
+        {
+            switch (Shift)
+            {
+            case 0:
+            {
+
+                break;
+            }
+            case 1:
+            {
+
+                break;
+            }
+            case 2:
+            {
+
+                break;
+            }
+            case 3:
+            {
+
+                break;
+            }
+            }
+        }
+        break;
+        case '4': //        Kodi Stop | Shift 1: Open | Shift 2: Open | Shift 3: Open
+        {
+            switch (Shift)
+            {
+            case 0:
+            {
+                mqttclient.publish("/Kodi/CMD", "Stop");
+                break;
+            }
+            case 1:
+            {
+
+                break;
+            }
+            case 2:
+            {
+
+                break;
+            }
+            case 3:
+            {
+
+                break;
+            }
+            }
+        }
+        break;
+        case '5': //        Shift: Kodi Zoom | else: Kodi Play/Pause
+        {
+            switch (Shift)
+            {
+                {
+                case 0:
+                {
+                    mqttclient.publish("/Kodi/CMD", "Pause");
+                    break;
+                }
+                case 1:
+                {
+                    mqttclient.publish("/Kodi/CMD", "Z");
+                    break;
+                }
+                case 2:
+                {
+
+                    break;
+                }
+                case 3:
+                {
+
+                    break;
+                }
+                }
+            }
+        }
+        break;
+        case '6': //        Shift: Leaving | else: Home
+        {
+            switch (Shift)
+            {
+                {
+                case 0:
+                {
+                    mqttclient.publish("/routines", "1");
+                    break;
+                }
+                case 1:
+                {
+                    mqttclient.publish("/routines", "0");
+                    break;
+                }
+                case 2:
+                {
+
+                    break;
+                }
+                case 3:
+                {
+
+                    break;
+                }
+                }
+            }
+        }
+        break;
+        case 'B': //        Shift: Over H 10% | else: Over H 1/0
+        {
+            switch (Shift)
+            {
+                {
+                case 0:
+                {
+                    mqttclient.publish("/MatrixR/CMD", "12");
+                    break;
+                }
+                case 1:
+                {
+                    mqttclient.publish("/MatrixR/CMD", "13");
+                    break;
+                }
+                case 2:
+                {
+
+                    break;
+                }
+                case 3:
+                {
+
+                    break;
+                }
+                }
+            }
+        }
+        case 'L': //      | Shift 1:  | Shift 2:  | Shift 3:
+        {
+            switch (Shift)
+            {
+            case 0:
+            {
+
+                break;
+            }
+            case 1:
+            {
+
+                break;
+            }
+            case 2:
+            {
+
+                break;
+            }
+            case 3:
+            {
+
+                break;
+            }
+            }
+        }
+        break;
+        case '7': //        Shift: Open | else: Kodi_BACKSPACE
+        {
+            switch (Shift)
+            {
+                {
+                case 0:
+                {
+                    mqttclient.publish("/Kodi/CMD", "Back");
+                    break;
+                }
+                case 1:
+                {
+
+                    break;
+                }
+                case 2:
+                {
+
+                    break;
+                }
+                case 3:
+                {
+
+                    break;
+                }
+                }
+            }
+        }
+        break;
+        case '8': //        Shift: Seek | else: Kodi_UP_ARROW
+        {
+            switch (Shift)
+            {
+                {
+                case 0:
+                {
+                    mqttclient.publish("/Kodi/CMD", "Up");
+                    break;
+                }
+                case 1:
+                {
+                    mqttclient.publish("/Kodi/CMD", "bFwd");
+                    break;
+                }
+                case 2:
+                {
+
+                    break;
+                }
+                case 3:
+                {
+
+                    break;
+                }
+                }
+            }
+        }
+        break;
+        case '9': //        Shift: Kodi Context Menu | else: Kodi Select
+        {
+            switch (Shift)
+            {
+                {
+                case 0:
+                {
+                    mqttclient.publish("/Kodi/CMD", "Select");
+                    break;
+                }
+                case 1:
+                {
+                    mqttclient.publish("/Kodi/CMD", "context");
+                    break;
+                }
+                case 2:
+                {
+
+                    break;
+                }
+                case 3:
+                {
+
+                    break;
+                }
+                }
+            }
+        }
+        break;
+        case 'C': //        Shift: Outlet-03 Toggle | else: Outlet-08 Toggle
+        {
+            switch (Shift)
+            {
+                {
+                case 0:
+                {
+                    serverPath = "http://192.168.1.148/control?cmd=event,Toggle";
+                    httpReq(serverPath);
+                    break;
+                }
+                case 1:
+                {
+                    serverPath = "http://192.168.1.143/control?cmd=event,Toggle";
+                    httpReq(serverPath);
+                    break;
+                }
+                case 2:
+                {
+
+                    break;
+                }
+                case 3:
+                {
+
+                    break;
+                }
+                }
+            }
+        }
+        case 'K': //      | Shift 1:  | Shift 2:  | Shift 3:
+        {
+            switch (Shift)
+            {
+            case 0:
+            {
+
+                break;
+            }
+            case 1:
+            {
+
+                break;
+            }
+            case 2:
+            {
+
+                break;
+            }
+            case 3:
+            {
+
+                break;
+            }
+            }
+        }
+        break;
+        case '*': //        Shift: Seek | else: Kodi_LEFT_ARROW
+        {
+            switch (Shift)
+            {
+                {
+                case 0:
+                {
+                    mqttclient.publish("/Kodi/CMD", "Left");
+                    break;
+                }
+                case 1:
+                {
+                    mqttclient.publish("/Kodi/CMD", "Rew");
+                    break;
+                }
+                case 2:
+                {
+
+                    break;
+                }
+                case 3:
+                {
+
+                    break;
+                }
+                }
+            }
+        }
+        break;
+        case '0': //        Shift: Seek | else: Kodi_DOWN_ARROW
+        {
+            switch (Shift)
+            {
+                {
+                case 0:
+                {
+                    mqttclient.publish("/Kodi/CMD", "Down");
+                    break;
+                }
+                case 1:
+                {
+                    mqttclient.publish("/Kodi/CMD", "bRew");
+                    break;
+                }
+                case 2:
+                {
+
+                    break;
+                }
+                case 3:
+                {
+
+                    break;
+                }
+                }
+            }
+        }
+        break;
+        case '#': //        Kodi_RIGHT_ARROW | Shift 1: Seek | Shift 2: OPEN | Shift 3: OPEN
+        {
+            switch (Shift)
+            {
+                {
+                case 0:
+                {
+                    mqttclient.publish("/Kodi/CMD", "Right");
+                    break;
+                }
+                case 1:
+                {
+                    mqttclient.publish("/Kodi/CMD", "Fwd");
+                    break;
+                }
+                case 2:
+                {
+
+                    break;
+                }
+                case 3:
+                {
+
+                    break;
+                }
+                }
+            }
+        }
+        break;
+        case 'D': //        Outlet-05 Toggle| Shift 1: Open  | Shift 2: Open | Shift 3: Open
+        {
+
+            switch (Shift)
+            {
+            case 0:
+            {
+                serverPath = "http://192.168.1.145/control?cmd=event,Toggle";
+                httpReq(serverPath);
                 break;
             }
             case 1:
@@ -424,10 +739,36 @@ void mode()
             }
         }
         break;
+        case 'J': //      | Shift 1:  | Shift 2:  | Shift 3:
+        {
+            switch (Shift)
+            {
+            case 0:
+            {
+
+                break;
+            }
+            case 1:
+            {
+
+                break;
+            }
+            case 2:
+            {
+
+                break;
+            }
+            case 3:
+            {
+
+                break;
+            }
+            }
         }
         break;
+        }
     }
-
+    break;
     case 1: //  Single KEY Mode
     {
         char Key1 = Keypad1.key[i].kchar;
@@ -707,10 +1048,12 @@ void loop()
             }
         }
     }
+
     if (rotaryEncoder.encoderChanged())
     {
         Serial.println(rotaryEncoder.readEncoder());
     }
+
     if (rotaryEncoder.isEncoderButtonClicked())
     {
 
