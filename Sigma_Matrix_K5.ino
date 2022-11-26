@@ -49,7 +49,7 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 BleKeyboard bleKeyboard("Sigma_Matrix_K5", "Sigma", 100);
 
-String serverPath = "";
+// String serverPath = "";
 
 WiFiClient espClientK5;
 
@@ -116,10 +116,10 @@ void mqttcallback(char *topic, byte *message, unsigned int length)
     Serial.print(". Message: ");
     String messageTemp;
 
-    for (int i = 0; i < length; i++)
+    for (int c = 0; c < length; c++)
     {
-        Serial.print((char)message[i]);
-        messageTemp += (char)message[i];
+        Serial.print((char)message[c]);
+        messageTemp += (char)message[c];
     }
     Serial.println();
 
@@ -176,7 +176,7 @@ void mode()
     {
         switch (KeyPressed)
         {
-        case '1': //        Upload Sketch | Shift 1: Compile Sketch  | Shift 2: Open | Shift 3: Open
+        case '1': //        Upload Sketch | Shift 1: Compile Sketch  | Shift 2: Comment Selecttion| Shift 3: Uncomment Selection
         {
             switch (Shift)
             {
@@ -200,12 +200,20 @@ void mode()
             }
             case 2:
             {
-                Serial.println("Shift case 2");
+                bleKeyboard.press(KEY_LEFT_CTRL);
+                bleKeyboard.press('k');
+                bleKeyboard.press('c');
+                delay(100);
+                bleKeyboard.releaseAll();
                 break;
             }
             case 3:
             {
-                Serial.println("Shift case 3");
+                bleKeyboard.press(KEY_LEFT_CTRL);
+                bleKeyboard.press('k');
+                bleKeyboard.press('u');
+                delay(100);
+                bleKeyboard.releaseAll();
                 break;
             }
             }
@@ -246,26 +254,18 @@ void mode()
             }
         }
         break;
-        case '3': //        Comment Selecttion | Shift 1: Uncomment Selection | Shift 2:  Open | Shift 3: Open
+        case '3': //        Open | Shift 1: Open | Shift 2:  Open | Shift 3: Open
         {
             switch (Shift)
             {
             case 0:
             {
-                bleKeyboard.press(KEY_LEFT_CTRL);
-                bleKeyboard.press('k');
-                bleKeyboard.press('c');
-                delay(100);
-                bleKeyboard.releaseAll();
+
                 break;
             }
             case 1:
             {
-                bleKeyboard.press(KEY_LEFT_CTRL);
-                bleKeyboard.press('k');
-                bleKeyboard.press('u');
-                delay(100);
-                bleKeyboard.releaseAll();
+
                 break;
             }
             case 2:
@@ -281,54 +281,51 @@ void mode()
             }
         }
         break;
-        case 'A': //        Bulb-01 Toggle | Shift 1: Bulb-02 Toggle | Shift 2:  Open | Shift 3: Open
+        case 'A': //        Bulb-01 Toggle | Shift 1: Bulb-02 Toggle | Shift 2:  Bulb-03 | Shift 3: Outlet-03
         {
             switch (Shift)
             {
             case 0:
             {
-                serverPath = "http://192.168.1.151/control?cmd=event,ToggleMCP";
-                httpReq(serverPath);
+                httpReq("http://192.168.1.151/control?cmd=event,ToggleMCP");
                 break;
             }
             case 1:
             {
-                serverPath = "http://192.168.1.152/control?cmd=event,ToggleMCP";
-                httpReq(serverPath);
+                httpReq("http://192.168.1.152/control?cmd=event,ToggleMCP");
                 break;
             }
             case 2:
             {
-                serverPath = "http://192.168.1.153/control?cmd=event,ToggleMCP";
-                httpReq(serverPath);
+                httpReq("http://192.168.1.153/control?cmd=event,ToggleMCP");
                 break;
             }
             case 3:
             {
-                serverPath = "http://192.168.1.143/control?cmd=event,Toggle";
-                httpReq(serverPath);
+                httpReq("http://192.168.1.143/control?cmd=event,Toggle");
                 break;
             }
             }
         }
         break;
-        case 'M': //        Open | Shift 1: Open | Shift 2: Open | Shift 3: Open
+        case 'M': //        Light | Shift 1: Home | Shift 2: Leaving | Shift 3: Open
         {
             switch (Shift)
             {
             case 0:
             {
-
+                httpReq("http://192.168.1.151/control?cmd=event,HighMCP");
                 break;
             }
             case 1:
             {
 
+                mqttclient.publish("/routines", "1");
                 break;
             }
             case 2:
             {
-
+                mqttclient.publish("/routines", "0");
                 break;
             }
             case 3:
@@ -366,7 +363,7 @@ void mode()
             }
         }
         break;
-        case '5': //        Shift: Kodi Zoom | else: Kodi Play/Pause
+        case '5': //        Kodi Play/Pause  | Shift 1: Kodi Zoom | Shift 2:  | Shift 3:
         {
             switch (Shift)
             {
@@ -395,19 +392,19 @@ void mode()
             }
         }
         break;
-        case '6': //        Shift: Leaving | else: Home
+        case '6': //        Open | Shift 1: Open | Shift 2:  Open | Shift 3: Open
         {
             switch (Shift)
             {
                 {
                 case 0:
                 {
-                    mqttclient.publish("/routines", "1");
+
                     break;
                 }
                 case 1:
                 {
-                    mqttclient.publish("/routines", "0");
+
                     break;
                 }
                 case 2:
@@ -424,7 +421,7 @@ void mode()
             }
         }
         break;
-        case 'B': //        Shift: Over H 10% | else: Over H 1/0
+        case 'B': //        Over H 1/0 | Shift 1: Over H 10%  | Shift 2: Outlet-06 | Shift 3: Open
         {
             switch (Shift)
             {
@@ -441,7 +438,7 @@ void mode()
                 }
                 case 2:
                 {
-
+                    httpReq("http://192.168.1.143/control?cmd=event,Toggle");
                     break;
                 }
                 case 3:
@@ -452,7 +449,8 @@ void mode()
                 }
             }
         }
-        case 'L': //      | Shift 1:  | Shift 2:  | Shift 3:
+        break;
+        case 'L': //        Open | Shift 1:  | Shift 2: Open | Shift 3: Open
         {
             switch (Shift)
             {
@@ -479,7 +477,7 @@ void mode()
             }
         }
         break;
-        case '7': //        Shift: Open | else: Kodi_BACKSPACE
+        case '7': //        Kodi_BACKSPACE | Shift 1: Open | Shift 2: Open | Shift 3: Monitor Off
         {
             switch (Shift)
             {
@@ -501,14 +499,14 @@ void mode()
                 }
                 case 3:
                 {
-
+                    httpReq("http://192.168.1.122:8655/monitor?mode=off");
                     break;
                 }
                 }
             }
         }
         break;
-        case '8': //        Shift: Seek | else: Kodi_UP_ARROW
+        case '8': //        Kodi_UP_ARROW | Shift 1: +30 | Shift 2: Open | Shift 3: Hibernate
         {
             switch (Shift)
             {
@@ -530,14 +528,14 @@ void mode()
                 }
                 case 3:
                 {
-
+                    httpReq("http://192.168.1.122:8655/pc?mode=hibernate");
                     break;
                 }
                 }
             }
         }
         break;
-        case '9': //        Shift: Kodi Context Menu | else: Kodi Select
+        case '9': //        Kodi Select | Shift 1: Kodi Context | Shift 2: Open | Shift 3: Open
         {
             switch (Shift)
             {
@@ -566,21 +564,18 @@ void mode()
             }
         }
         break;
-        case 'C': //        Shift: Outlet-03 Toggle | else: Outlet-08 Toggle
+        case 'C': //        Outlet-08 Toggle | Shift 1: Open | Shift 2: Open | Shift 3: Open
         {
             switch (Shift)
             {
                 {
                 case 0:
                 {
-                    serverPath = "http://192.168.1.148/control?cmd=event,Toggle";
-                    httpReq(serverPath);
+                    httpReq("http://192.168.1.148/control?cmd=event,Toggle");
                     break;
                 }
                 case 1:
                 {
-                    serverPath = "http://192.168.1.143/control?cmd=event,Toggle";
-                    httpReq(serverPath);
                     break;
                 }
                 case 2:
@@ -596,13 +591,19 @@ void mode()
                 }
             }
         }
-        case 'K': //      | Shift 1:  | Shift 2:  | Shift 3:
+        break;
+        case 'K': //        Redo | Shift 1: Open | Shift 2: Open | Shift 3: Open
         {
             switch (Shift)
             {
             case 0:
             {
-
+                bleKeyboard.press(KEY_LEFT_CTRL);
+                bleKeyboard.press(KEY_LEFT_SHIFT);
+                bleKeyboard.press('z');
+                delay(100);
+                bleKeyboard.releaseAll();
+                Serial.println("ReDo");
                 break;
             }
             case 1:
@@ -623,7 +624,7 @@ void mode()
             }
         }
         break;
-        case '*': //        Shift: Seek | else: Kodi_LEFT_ARROW
+        case '*': //        Kodi_LEFT_ARROW | Shift 1: -10 | Shift 2: Open | Shift 3: Open
         {
             switch (Shift)
             {
@@ -652,7 +653,7 @@ void mode()
             }
         }
         break;
-        case '0': //        Shift: Seek | else: Kodi_DOWN_ARROW
+        case '0': //        Kodi_DOWN_ARROW | Shift 1: -30 | Shift 2: Open | Shift 3: Open
         {
             switch (Shift)
             {
@@ -681,7 +682,7 @@ void mode()
             }
         }
         break;
-        case '#': //        Kodi_RIGHT_ARROW | Shift 1: Seek | Shift 2: OPEN | Shift 3: OPEN
+        case '#': //        Kodi_RIGHT_ARROW | Shift 1: +10 | Shift 2: OPEN | Shift 3: OPEN
         {
             switch (Shift)
             {
@@ -717,8 +718,7 @@ void mode()
             {
             case 0:
             {
-                serverPath = "http://192.168.1.145/control?cmd=event,Toggle";
-                httpReq(serverPath);
+                httpReq("http://192.168.1.145/control?cmd=event,Toggle");
                 break;
             }
             case 1:
@@ -739,13 +739,16 @@ void mode()
             }
         }
         break;
-        case 'J': //      | Shift 1:  | Shift 2:  | Shift 3:
+        case 'J': //        Undo | Shift 1:  | Shift 2:  | Shift 3:
         {
             switch (Shift)
             {
             case 0:
             {
-
+                bleKeyboard.press(KEY_LEFT_CTRL);
+                bleKeyboard.press('z');
+                delay(100);
+                bleKeyboard.releaseAll();
                 break;
             }
             case 1:
@@ -840,7 +843,137 @@ void mode()
         if (Key1 != NULL)
             if (Key1 != 'E' && Key1 != 'F' && Key1 != 'G' && Key1 != 'H' && Key1 != 'I')
             {
-                bleKeyboard.press(Key1);
+                switch (KeyPressed)
+                {
+                case '1': //    KEY_NUM_1
+                {
+                    bleKeyboard.write(KEY_NUM_1);
+                    break;
+                }
+
+                case '2': //    KEY_NUM_2
+                {
+                    bleKeyboard.write(KEY_NUM_2);
+                    break;
+                }
+
+                case '3': //    KEY_NUM_3
+                {
+                    bleKeyboard.write(KEY_NUM_3);
+                    break;
+                }
+
+                case 'A': //    KEY_NUM_ASTERISK
+                {
+                    bleKeyboard.write(KEY_NUM_ASTERISK);
+                    break;
+                }
+
+                case 'M': //    " mm"
+                {
+                    bleKeyboard.print(" mm");
+                    break;
+                }
+
+                case '4': //    KEY_NUM_4
+                {
+                    bleKeyboard.write(KEY_NUM_4);
+                    break;
+                }
+
+                case '5': //    KEY_NUM_5
+                {
+                    bleKeyboard.write(KEY_NUM_5);
+                    break;
+                }
+
+                case '6': //    KEY_NUM_6
+                {
+                    bleKeyboard.write(KEY_NUM_6);
+                    break;
+                }
+
+                case 'B': //    KEY_NUM_MINUS
+                {
+                    bleKeyboard.write(KEY_NUM_MINUS);
+
+                    break;
+                }
+
+                case 'L': //    " inch"
+                {
+                    bleKeyboard.print(" inch");
+                    break;
+                }
+
+                case '7': //    KEY_NUM_7
+                {
+                    bleKeyboard.write(KEY_NUM_7);
+                    break;
+                }
+
+                case '8': //    KEY_NUM_8
+                {
+                    bleKeyboard.write(KEY_NUM_8);
+                    break;
+                }
+
+                case '9': //    KEY_NUM_9
+                {
+                    bleKeyboard.write(KEY_NUM_9);
+                    break;
+                }
+
+                case 'C': //    KEY_NUM_PLUS
+                {
+                    bleKeyboard.write(KEY_NUM_PLUS);
+                    break;
+                }
+
+                case 'K': //    KEY_TAB
+                {
+                    bleKeyboard.write(KEY_TAB);
+                    break;
+                }
+
+                case '*': //    KEY_NUM_PERIOD
+                {
+                    bleKeyboard.write(KEY_NUM_PERIOD);
+                    break;
+                }
+
+                case '0': //    KEY_NUM_0
+                {
+                    bleKeyboard.write(KEY_NUM_0);
+                    break;
+                }
+
+                case '#': //    KEY_NUM_PERIOD
+                {
+                    bleKeyboard.write(KEY_NUM_PERIOD);
+
+                    break;
+                }
+
+                case 'D': //    KEY_NUM_SLASH
+                {
+                    bleKeyboard.write(KEY_NUM_SLASH);
+                    break;
+                }
+
+                case 'J': //    KEY_NUM_ENTER
+                {
+                    bleKeyboard.write(KEY_NUM_ENTER);
+                    break;
+                }
+
+                default:
+                {
+                    break;
+                }
+                }
+
+                // bleKeyboard.press(Key1);
                 delay(100);
                 bleKeyboard.releaseAll();
                 display.clearDisplay();
@@ -1048,9 +1181,15 @@ void loop()
             }
         }
     }
-
+    // https://www.best-microcontroller-projects.com/rotary-encoder.html
     if (rotaryEncoder.encoderChanged())
     {
+        Mode = ++Mode;
+        if (Mode > ModeMax)
+        {
+            Mode = 0;
+        }
+        UpdateOled(Mode);
         Serial.println(rotaryEncoder.readEncoder());
     }
 
