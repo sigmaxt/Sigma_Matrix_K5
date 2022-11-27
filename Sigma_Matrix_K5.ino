@@ -308,7 +308,7 @@ void mode()
             }
         }
         break;
-        case 'M': //        Light | Shift 1: Home | Shift 2: Leaving | Shift 3: Open
+        case 'M': //        Light | Shift 1: Home | Shift 2: Open | Shift 3: Leaving
         {
             switch (Shift)
             {
@@ -325,12 +325,11 @@ void mode()
             }
             case 2:
             {
-                mqttclient.publish("/routines", "0");
-                break;
             }
             case 3:
             {
-
+                mqttclient.publish("/routines", "0");
+                break;
                 break;
             }
             }
@@ -450,18 +449,25 @@ void mode()
             }
         }
         break;
-        case 'L': //        Open | Shift 1:  | Shift 2: Open | Shift 3: Open
+        case 'L': //        Copy | Paste | Shift 2 Open | Cut
         {
             switch (Shift)
             {
             case 0:
             {
-
+                bleKeyboard.press(KEY_LEFT_CTRL);
+                bleKeyboard.press('c');
+                delay(100);
+                bleKeyboard.releaseAll();
                 break;
             }
             case 1:
             {
 
+                bleKeyboard.press(KEY_LEFT_CTRL);
+                bleKeyboard.press('v');
+                delay(100);
+                bleKeyboard.releaseAll();
                 break;
             }
             case 2:
@@ -471,7 +477,10 @@ void mode()
             }
             case 3:
             {
-
+                bleKeyboard.press(KEY_LEFT_CTRL);
+                bleKeyboard.press('x');
+                delay(100);
+                bleKeyboard.releaseAll();
                 break;
             }
             }
@@ -489,12 +498,16 @@ void mode()
                 }
                 case 1:
                 {
-
+                    bleKeyboard.press(KEY_MEDIA_VOLUME_UP);
+                    delay(100);
+                    bleKeyboard.releaseAll();
                     break;
                 }
                 case 2:
                 {
-
+                    bleKeyboard.press(KEY_MEDIA_VOLUME_DOWN);
+                    delay(100);
+                    bleKeyboard.releaseAll();
                     break;
                 }
                 case 3:
@@ -576,6 +589,7 @@ void mode()
                 }
                 case 1:
                 {
+
                     break;
                 }
                 case 2:
@@ -847,132 +861,549 @@ void mode()
                 {
                 case '1': //    KEY_NUM_1
                 {
-                    bleKeyboard.write(KEY_NUM_1);
-                    break;
-                }
+                    switch (Shift)
+                    {
+                    case 0:
+                    {
+                        bleKeyboard.write(KEY_NUM_1);
+                        break;
+                    }
+                    case 1:
+                    {
 
+                        break;
+                    }
+                    case 2:
+                    {
+
+                        break;
+                    }
+                    case 3:
+                    {
+
+                        break;
+                    }
+                    }
+                }
+                break;
                 case '2': //    KEY_NUM_2
                 {
-                    bleKeyboard.write(KEY_NUM_2);
-                    break;
-                }
+                    switch (Shift)
+                    {
+                    case 0:
+                    {
+                        bleKeyboard.write(KEY_NUM_2);
+                        break;
+                    }
+                    case 1:
+                    {
 
+                        break;
+                    }
+                    case 2:
+                    {
+
+                        break;
+                    }
+                    case 3:
+                    {
+
+                        break;
+                    }
+                    }
+                }
+                break;
                 case '3': //    KEY_NUM_3
                 {
-                    bleKeyboard.write(KEY_NUM_3);
-                    break;
-                }
+                    switch (Shift)
+                    {
+                    case 0:
+                    {
+                        bleKeyboard.write(KEY_NUM_3);
+                        break;
+                    }
+                    case 1:
+                    {
 
+                        break;
+                    }
+                    case 2:
+                    {
+
+                        break;
+                    }
+                    case 3:
+                    {
+
+                        break;
+                    }
+                    }
+                }
+                break;
                 case 'A': //    KEY_NUM_ASTERISK
-                {
-                    bleKeyboard.write(KEY_NUM_ASTERISK);
-                    break;
-                }
+                 {
+                    switch (Shift)
+                    {
+                    case 0:
+                    {
+bleKeyboard.write(KEY_NUM_ASTERISK);
+                        break;
+                    }
+                    case 1:
+                    {
 
+                        break;
+                    }
+                    case 2:
+                    {
+
+                        break;
+                    }
+                    case 3:
+                    {
+
+                        break;
+                    }
+                    }
+                }
+                break;
                 case 'M': //    " mm"
                 {
+                    switch (Shift)
+                    {
+                    case 0:
+                    {
                     bleKeyboard.print(" mm");
-                    break;
-                }
+                        break;
+                    }
+                    case 1:
+                    {
 
+                        break;
+                    }
+                    case 2:
+                    {
+
+                        break;
+                    }
+                    case 3:
+                    {
+
+                        break;
+                    }
+                    }
+                }
+                break;
                 case '4': //    KEY_NUM_4
-                {
+                 {
+                    switch (Shift)
+                    {
+                    case 0:
+                    {
                     bleKeyboard.write(KEY_NUM_4);
-                    break;
-                }
+                        break;
+                    }
+                    case 1:
+                    {
 
+                        break;
+                    }
+                    case 2:
+                    {
+
+                        break;
+                    }
+                    case 3:
+                    {
+
+                        break;
+                    }
+                    }
+                }
+                break;
                 case '5': //    KEY_NUM_5
-                {
+                 {
+                    switch (Shift)
+                    {
+                    case 0:
+                    {
                     bleKeyboard.write(KEY_NUM_5);
-                    break;
-                }
+                        break;
+                    }
+                    case 1:
+                    {
 
+                        break;
+                    }
+                    case 2:
+                    {
+
+                        break;
+                    }
+                    case 3:
+                    {
+
+                        break;
+                    }
+                    }
+                }
+                break;
                 case '6': //    KEY_NUM_6
-                {
+                 {
+                    switch (Shift)
+                    {
+                    case 0:
+                    {
                     bleKeyboard.write(KEY_NUM_6);
-                    break;
-                }
+                        break;
+                    }
+                    case 1:
+                    {
 
+                        break;
+                    }
+                    case 2:
+                    {
+
+                        break;
+                    }
+                    case 3:
+                    {
+
+                        break;
+                    }
+                    }
+                }
+                break;
                 case 'B': //    KEY_NUM_MINUS
-                {
+                 {
+                    switch (Shift)
+                    {
+                    case 0:
+                    {
                     bleKeyboard.write(KEY_NUM_MINUS);
+                        break;
+                    }
+                    case 1:
+                    {
 
-                    break;
+                        break;
+                    }
+                    case 2:
+                    {
+
+                        break;
+                    }
+                    case 3:
+                    {
+
+                        break;
+                    }
+                    }
                 }
-
+                break;
                 case 'L': //    " inch"
-                {
+                 {
+                    switch (Shift)
+                    {
+                    case 0:
+                    {
                     bleKeyboard.print(" inch");
-                    break;
-                }
+                        break;
+                    }
+                    case 1:
+                    {
 
+                        break;
+                    }
+                    case 2:
+                    {
+
+                        break;
+                    }
+                    case 3:
+                    {
+
+                        break;
+                    }
+                    }
+                }
+                break;
                 case '7': //    KEY_NUM_7
-                {
+                 {
+                    switch (Shift)
+                    {
+                    case 0:
+                    {
                     bleKeyboard.write(KEY_NUM_7);
-                    break;
-                }
+                        break;
+                    }
+                    case 1:
+                    {
 
+                        break;
+                    }
+                    case 2:
+                    {
+
+                        break;
+                    }
+                    case 3:
+                    {
+
+                        break;
+                    }
+                    }
+                }
+                break;
                 case '8': //    KEY_NUM_8
-                {
+                 {
+                    switch (Shift)
+                    {
+                    case 0:
+                    {
                     bleKeyboard.write(KEY_NUM_8);
-                    break;
-                }
+                        break;
+                    }
+                    case 1:
+                    {
 
+                        break;
+                    }
+                    case 2:
+                    {
+
+                        break;
+                    }
+                    case 3:
+                    {
+
+                        break;
+                    }
+                    }
+                }
+                break;
                 case '9': //    KEY_NUM_9
-                {
+                 {
+                    switch (Shift)
+                    {
+                    case 0:
+                    {
                     bleKeyboard.write(KEY_NUM_9);
-                    break;
-                }
+                        break;
+                    }
+                    case 1:
+                    {
 
+                        break;
+                    }
+                    case 2:
+                    {
+
+                        break;
+                    }
+                    case 3:
+                    {
+
+                        break;
+                    }
+                    }
+                }
+                break;
                 case 'C': //    KEY_NUM_PLUS
-                {
+                 {
+                    switch (Shift)
+                    {
+                    case 0:
+                    {
                     bleKeyboard.write(KEY_NUM_PLUS);
-                    break;
-                }
+                        break;
+                    }
+                    case 1:
+                    {
 
+                        break;
+                    }
+                    case 2:
+                    {
+
+                        break;
+                    }
+                    case 3:
+                    {
+
+                        break;
+                    }
+                    }
+                }
+                break;
                 case 'K': //    KEY_TAB
-                {
+                 {
+                    switch (Shift)
+                    {
+                    case 0:
+                    {
                     bleKeyboard.write(KEY_TAB);
-                    break;
-                }
+                        break;
+                    }
+                    case 1:
+                    {
 
+                        break;
+                    }
+                    case 2:
+                    {
+
+                        break;
+                    }
+                    case 3:
+                    {
+
+                        break;
+                    }
+                    }
+                }
+                break;
                 case '*': //    KEY_NUM_PERIOD
-                {
+                 {
+                    switch (Shift)
+                    {
+                    case 0:
+                    {
                     bleKeyboard.write(KEY_NUM_PERIOD);
-                    break;
-                }
+                        break;
+                    }
+                    case 1:
+                    {
 
+                        break;
+                    }
+                    case 2:
+                    {
+
+                        break;
+                    }
+                    case 3:
+                    {
+
+                        break;
+                    }
+                    }
+                }
+                break;
                 case '0': //    KEY_NUM_0
                 {
+                    switch (Shift)
+                    {
+                    case 0:
+                    {
                     bleKeyboard.write(KEY_NUM_0);
-                    break;
-                }
+                        break;
+                    }
+                    case 1:
+                    {
 
+                        break;
+                    }
+                    case 2:
+                    {
+
+                        break;
+                    }
+                    case 3:
+                    {
+
+                        break;
+                    }
+                    }
+                }
+                break;
                 case '#': //    KEY_NUM_PERIOD
                 {
+                    switch (Shift)
+                    {
+                    case 0:
+                    {
                     bleKeyboard.write(KEY_NUM_PERIOD);
+                        break;
+                    }
+                    case 1:
+                    {
 
-                    break;
+                        break;
+                    }
+                    case 2:
+                    {
+
+                        break;
+                    }
+                    case 3:
+                    {
+
+                        break;
+                    }
+                    }
                 }
-
+                break;
                 case 'D': //    KEY_NUM_SLASH
-                {
+                 {
+                    switch (Shift)
+                    {
+                    case 0:
+                    {
                     bleKeyboard.write(KEY_NUM_SLASH);
-                    break;
-                }
+                        break;
+                    }
+                    case 1:
+                    {
 
+                        break;
+                    }
+                    case 2:
+                    {
+
+                        break;
+                    }
+                    case 3:
+                    {
+
+                        break;
+                    }
+                    }
+                }
+                break;
                 case 'J': //    KEY_NUM_ENTER
-                {
+                 {
+                    switch (Shift)
+                    {
+                    case 0:
+                    {
                     bleKeyboard.write(KEY_NUM_ENTER);
-                    break;
-                }
+                        break;
+                    }
+                    case 1:
+                    {
 
+                        break;
+                    }
+                    case 2:
+                    {
+
+                        break;
+                    }
+                    case 3:
+                    {
+
+                        break;
+                    }
+                    }
+                }
+                break;
                 default:
                 {
                     break;
                 }
                 }
-
                 // bleKeyboard.press(Key1);
                 delay(100);
                 bleKeyboard.releaseAll();
