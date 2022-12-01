@@ -27,17 +27,20 @@ String msg; // Serial message for key PRESSED HOLD RELASED IDLE
 unsigned long loopCount;
 unsigned long startTime;
 char KeyPressed;
-const byte ROWS = 5; // four rows
-const byte COLS = 5; // three columns
+const byte ROWS = 8;
+const byte COLS = 5;
 char keys[ROWS][COLS] = {
     {'1', '2', '3', 'A', 'M'},
     {'4', '5', '6', 'B', 'L'},
     {'7', '8', '9', 'C', 'K'},
     {'*', '0', '#', 'D', 'J'},
-    {'E', 'F', 'G', 'H', 'I'}};
+    {'E', 'F', 'G', 'H', 'I'},
+    {'N', 'O', 'P', 'Q', 'R'},
+    {'S', 'T', 'U', 'V', 'W'},
+    {'X', 'Y', 'Z', '$', '@'}};
 String fullKey;
-byte rowPins[ROWS] = {33, 25, 26, 27, 13}; // connect to the row pinouts of the Keypad1
-byte colPins[COLS] = {19, 18, 17, 16, 4};  // connect to the column pinouts of the Keypad1
+byte rowPins[ROWS] = {33, 25, 26, 27, 13, 23, 14, 12}; // connect to the row pinouts of the Keypad1
+byte colPins[COLS] = {19, 18, 17, 16, 4};              // connect to the column pinouts of the Keypad1
 
 void DispOff();
 SchedTask taskDispOff(NEVER, ONESHOT, DispOff);
@@ -84,27 +87,30 @@ void wificn() // Connect to WiFi
 
 void mqttcn() // Connect to MQTT
 {
-        mqttclient.setServer(mqttServer, mqttPort);
-        mqttclient.setCallback(mqttcallback);
-
-        while (!mqttclient.connected())
+        if (MQTT)
         {
-                Serial.println("Connecting to MQTT...");
+                mqttclient.setServer(mqttServer, mqttPort);
+                mqttclient.setCallback(mqttcallback);
 
-                if (mqttclient.connect("Keypad Client", mqttUser, mqttPassword))
+                while (!mqttclient.connected())
                 {
-                        mqttclient.subscribe("esp32/output");
-                        Serial.println("connected");
-                        mqttclient.loop();
-                }
-                else
-                {
-                        Serial.print("failed with state ");
-                        Serial.print(mqttclient.state());
+                        Serial.println("Connecting to MQTT...");
 
-                        delay(2000);
+                        if (mqttclient.connect("Keypad Client", mqttUser, mqttPassword))
+                        {
+                                mqttclient.subscribe("esp32/output");
+                                Serial.println("connected");
+                                mqttclient.loop();
+                        }
+                        else
+                        {
+                                Serial.print("failed with state ");
+                                Serial.print(mqttclient.state());
+
+                                delay(2000);
+                        }
+                        mqttclient.publish("MatrixR/LWT", "1");
                 }
-                mqttclient.publish("MatrixR/LWT", "1");
         }
 }
 
@@ -1440,7 +1446,7 @@ void pcKeypad() // Mode 3
                 break;
         }
         }
-        // bleKeyboard.press(Key1);
+
         delay(keyReltime);
         bleKeyboard.releaseAll();
         display.clearDisplay();
@@ -1547,7 +1553,7 @@ void loop()
 
         if (Keypad1.getKeys())
         {
-                for (int i = 0; i < 2; i++) // Scan the whole key list.
+                for (int i = 0; i < LIST_MAX; i++) // Scan the whole key list.
                 {
                         if (Keypad1.key[i].stateChanged) // Only find keys that have changed state.
                         {
