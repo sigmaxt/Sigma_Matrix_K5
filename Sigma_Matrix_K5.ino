@@ -779,6 +779,416 @@ void macro() // Mode 0
                 }
         }
         break;
+         case 'N': //   KEY_DELETE | Shift 1: Open | Shift 2: Open | Shift 3: Open
+        {
+                switch (Shift)
+                {
+                case 0:
+                {
+                        bleKeyboard.write(KEY_DELETE);
+                        break;
+                }
+                case 1:
+                {
+
+                        break;
+                }
+                case 2:
+                {
+
+                        break;
+                }
+                case 3:
+                {
+
+                        break;
+                }
+                }
+        }
+        break;
+        case 'O': //    SHIFT_KEY_TAB | Shift 1: Open | Shift 2: Open | Shift 3: Open
+        {
+                switch (Shift)
+                {
+                case 0:
+                {
+                        bleKeyboard.press(KEY_LEFT_SHIFT);
+                        bleKeyboard.press(KEY_TAB);
+                        delay(keyReltime);
+                        bleKeyboard.releaseAll();
+                        break;
+                }
+                case 1:
+                {
+
+                        break;
+                }
+                case 2:
+                {
+
+                        break;
+                }
+                case 3:
+                {
+
+                        break;
+                }
+                }
+        }
+        break;
+        case 'P': //    KEY_ESC | Shift 1: Open | Shift 2: Open | Shift 3: Open
+        {
+                switch (Shift)
+                {
+                case 0:
+                {
+                        bleKeyboard.write(KEY_ESC);
+                        break;
+                }
+                case 1:
+                {
+
+                        break;
+                }
+                case 2:
+                {
+
+                        break;
+                }
+                case 3:
+                {
+
+                        break;
+                }
+                }
+        }
+        break;
+        case 'Q': //    KEY_TAB | Shift 1: Open | Shift 2: Open | Shift 3: Open
+        {
+                switch (Shift)
+                {
+                case 0:
+                {
+                        bleKeyboard.write(KEY_TAB);
+                        break;
+                }
+                case 1:
+                {
+
+                        break;
+                }
+                case 2:
+                {
+
+                        break;
+                }
+                case 3:
+                {
+
+                        break;
+                }
+                }
+        }
+        break;
+        case 'R': //    KEY_INSERT | Shift 1: Open | Shift 2: Open | Shift 3: Open
+        {
+                switch (Shift)
+                {
+                case 0:
+                {
+                        bleKeyboard.write(KEY_INSERT);
+                        break;
+                }
+                case 1:
+                {
+
+                        break;
+                }
+                case 2:
+                {
+
+                        break;
+                }
+                case 3:
+                {
+
+                        break;
+                }
+                }
+        }
+        break;
+
+        case 'S': //        KEY_HOME | Shift 1: Open | Shift 2: Open | Shift 3: Open
+        {
+                switch (Shift)
+                {
+                case 0:
+                {
+                        bleKeyboard.write(KEY_HOME);
+                        break;
+                }
+                case 1:
+                {
+
+                        break;
+                }
+                case 2:
+                {
+
+                        break;
+                }
+                case 3:
+                {
+
+                        break;
+                }
+                }
+        }
+        break;
+        case 'T': //        KEY_BACKSPACE | Shift 1: Open | Shift 2: Open | Shift 3: Open
+        {
+                switch (Shift)
+                {
+                case 0:
+                {
+                        bleKeyboard.write(KEY_BACKSPACE);
+                        break;
+                }
+                case 1:
+                {
+
+                        break;
+                }
+                case 2:
+                {
+
+                        break;
+                }
+                case 3:
+                {
+
+                        break;
+                }
+                }
+        }
+        break;
+        case 'U': //        KEY_UP_ARROW | Shift 1: Open | Shift 2: Open | Shift 3: Open
+        {
+                switch (Shift)
+                {
+                case 0:
+                {
+                        bleKeyboard.write(KEY_UP_ARROW);
+                        break;
+                }
+                case 1:
+                {
+
+                        break;
+                }
+                case 2:
+                {
+
+                        break;
+                }
+                case 3:
+                {
+
+                        break;
+                }
+                }
+        }
+        break;
+        case 'V': //        KEY_RETURN | Shift 1: Open | Shift 2: Open | Shift 3: Open
+        {
+                switch (Shift)
+                {
+                case 0:
+                {
+                        bleKeyboard.write(KEY_RETURN);
+                        break;
+                }
+                case 1:
+                {
+
+                        break;
+                }
+                case 2:
+                {
+
+                        break;
+                }
+                case 3:
+                {
+
+                        break;
+                }
+                }
+        }
+        break;
+        case 'W': //        KEY_PAGE_UP | Shift 1: Open | Shift 2: Open | Shift 3: Open
+        {
+                switch (Shift)
+                {
+                case 0:
+                {
+                        bleKeyboard.write(KEY_PAGE_UP);
+                        break;
+                }
+                case 1:
+                {
+
+                        break;
+                }
+                case 2:
+                {
+
+                        break;
+                }
+                case 3:
+                {
+
+                        break;
+                }
+                }
+        }
+        break;
+ 
+        case 'X': //        KEY_END | Shift 1: Open | Shift 2: Open | Shift 3: Open
+        {
+                switch (Shift)
+                {
+                case 0:
+                {
+                        bleKeyboard.write(KEY_END);
+                        break;
+                }
+                case 1:
+                {
+
+                        break;
+                }
+                case 2:
+                {
+
+                        break;
+                }
+                case 3:
+                {
+
+                        break;
+                }
+                }
+        }
+        break;
+        case 'Y': //        KEY_LEFT_ARROW | Shift 1: Open | Shift 2: Open | Shift 3: Open
+        {
+                switch (Shift)
+                {
+                case 0:
+                {
+                        bleKeyboard.write(KEY_LEFT_ARROW);
+                        break;
+                }
+                case 1:
+                {
+
+                        break;
+                }
+                case 2:
+                {
+
+                        break;
+                }
+                case 3:
+                {
+
+                        break;
+                }
+                }
+        }
+        break;
+        case 'Z': //        KEY_DOWN_ARROW | Shift 1: Open | Shift 2: Open | Shift 3: Open
+        {
+                switch (Shift)
+                {
+                case 0:
+                {
+                        bleKeyboard.write(KEY_DOWN_ARROW);
+                        break;
+                }
+                case 1:
+                {
+
+                        break;
+                }
+                case 2:
+                {
+
+                        break;
+                }
+                case 3:
+                {
+
+                        break;
+                }
+                }
+        }
+        break;
+        case '$': //        KEY_RIGHT_ARROW | Shift 1: Open | Shift 2: Open | Shift 3: Open
+        {
+                switch (Shift)
+                {
+                case 0:
+                {
+                        bleKeyboard.write(KEY_RIGHT_ARROW);
+                        break;
+                }
+                case 1:
+                {
+
+                        break;
+                }
+                case 2:
+                {
+
+                        break;
+                }
+                case 3:
+                {
+
+                        break;
+                }
+                }
+        }
+        break;
+        case '@': //        KEY_PAGE_DOWN | Shift 1: Open | Shift 2: Open | Shift 3: Open
+        {
+                switch (Shift)
+                {
+                case 0:
+                {
+                        bleKeyboard.write(KEY_PAGE_DOWN);
+                        break;
+                }
+                case 1:
+                {
+
+                        break;
+                }
+                case 2:
+                {
+
+                        break;
+                }
+                case 3:
+                {
+
+                        break;
+                }
+                }
+        }
+        break;
         }
 }
 
@@ -1441,7 +1851,417 @@ void pcKeypad() // Mode 3
                 }
         }
         break;
-        default:
+         case 'N': //   KEY_DELETE | Shift 1: Open | Shift 2: Open | Shift 3: Open
+        {
+                switch (Shift)
+                {
+                case 0:
+                {
+                        bleKeyboard.write(KEY_DELETE);
+                        break;
+                }
+                case 1:
+                {
+
+                        break;
+                }
+                case 2:
+                {
+
+                        break;
+                }
+                case 3:
+                {
+
+                        break;
+                }
+                }
+        }
+        break;
+        case 'O': //    SHIFT_KEY_TAB | Shift 1: Open | Shift 2: Open | Shift 3: Open
+        {
+                switch (Shift)
+                {
+                case 0:
+                {
+                        bleKeyboard.press(KEY_LEFT_SHIFT);
+                        bleKeyboard.press(KEY_TAB);
+                        delay(keyReltime);
+                        bleKeyboard.releaseAll();
+                        break;
+                }
+                case 1:
+                {
+
+                        break;
+                }
+                case 2:
+                {
+
+                        break;
+                }
+                case 3:
+                {
+
+                        break;
+                }
+                }
+        }
+        break;
+        case 'P': //    KEY_ESC | Shift 1: Open | Shift 2: Open | Shift 3: Open
+        {
+                switch (Shift)
+                {
+                case 0:
+                {
+                        bleKeyboard.write(KEY_ESC);
+                        break;
+                }
+                case 1:
+                {
+
+                        break;
+                }
+                case 2:
+                {
+
+                        break;
+                }
+                case 3:
+                {
+
+                        break;
+                }
+                }
+        }
+        break;
+        case 'Q': //    KEY_TAB | Shift 1: Open | Shift 2: Open | Shift 3: Open
+        {
+                switch (Shift)
+                {
+                case 0:
+                {
+                        bleKeyboard.write(KEY_TAB);
+                        break;
+                }
+                case 1:
+                {
+
+                        break;
+                }
+                case 2:
+                {
+
+                        break;
+                }
+                case 3:
+                {
+
+                        break;
+                }
+                }
+        }
+        break;
+        case 'R': //    KEY_INSERT | Shift 1: Open | Shift 2: Open | Shift 3: Open
+        {
+                switch (Shift)
+                {
+                case 0:
+                {
+                        bleKeyboard.write(KEY_INSERT);
+                        break;
+                }
+                case 1:
+                {
+
+                        break;
+                }
+                case 2:
+                {
+
+                        break;
+                }
+                case 3:
+                {
+
+                        break;
+                }
+                }
+        }
+        break;
+
+        case 'S': //        KEY_HOME | Shift 1: Open | Shift 2: Open | Shift 3: Open
+        {
+                switch (Shift)
+                {
+                case 0:
+                {
+                        bleKeyboard.write(KEY_HOME);
+                        break;
+                }
+                case 1:
+                {
+
+                        break;
+                }
+                case 2:
+                {
+
+                        break;
+                }
+                case 3:
+                {
+
+                        break;
+                }
+                }
+        }
+        break;
+        case 'T': //        KEY_BACKSPACE | Shift 1: Open | Shift 2: Open | Shift 3: Open
+        {
+                switch (Shift)
+                {
+                case 0:
+                {
+                        bleKeyboard.write(KEY_BACKSPACE);
+                        break;
+                }
+                case 1:
+                {
+
+                        break;
+                }
+                case 2:
+                {
+
+                        break;
+                }
+                case 3:
+                {
+
+                        break;
+                }
+                }
+        }
+        break;
+        case 'U': //        KEY_UP_ARROW | Shift 1: Open | Shift 2: Open | Shift 3: Open
+        {
+                switch (Shift)
+                {
+                case 0:
+                {
+                        bleKeyboard.write(KEY_UP_ARROW);
+                        break;
+                }
+                case 1:
+                {
+
+                        break;
+                }
+                case 2:
+                {
+
+                        break;
+                }
+                case 3:
+                {
+
+                        break;
+                }
+                }
+        }
+        break;
+        case 'V': //        KEY_RETURN | Shift 1: Open | Shift 2: Open | Shift 3: Open
+        {
+                switch (Shift)
+                {
+                case 0:
+                {
+                        bleKeyboard.write(KEY_RETURN);
+                        break;
+                }
+                case 1:
+                {
+
+                        break;
+                }
+                case 2:
+                {
+
+                        break;
+                }
+                case 3:
+                {
+
+                        break;
+                }
+                }
+        }
+        break;
+        case 'W': //        KEY_PAGE_UP | Shift 1: Open | Shift 2: Open | Shift 3: Open
+        {
+                switch (Shift)
+                {
+                case 0:
+                {
+                        bleKeyboard.write(KEY_PAGE_UP);
+                        break;
+                }
+                case 1:
+                {
+
+                        break;
+                }
+                case 2:
+                {
+
+                        break;
+                }
+                case 3:
+                {
+
+                        break;
+                }
+                }
+        }
+        break;
+ 
+        case 'X': //        KEY_END | Shift 1: Open | Shift 2: Open | Shift 3: Open
+        {
+                switch (Shift)
+                {
+                case 0:
+                {
+                        bleKeyboard.write(KEY_END);
+                        break;
+                }
+                case 1:
+                {
+
+                        break;
+                }
+                case 2:
+                {
+
+                        break;
+                }
+                case 3:
+                {
+
+                        break;
+                }
+                }
+        }
+        break;
+        case 'Y': //        KEY_LEFT_ARROW | Shift 1: Open | Shift 2: Open | Shift 3: Open
+        {
+                switch (Shift)
+                {
+                case 0:
+                {
+                        bleKeyboard.write(KEY_LEFT_ARROW);
+                        break;
+                }
+                case 1:
+                {
+
+                        break;
+                }
+                case 2:
+                {
+
+                        break;
+                }
+                case 3:
+                {
+
+                        break;
+                }
+                }
+        }
+        break;
+        case 'Z': //        KEY_DOWN_ARROW | Shift 1: Open | Shift 2: Open | Shift 3: Open
+        {
+                switch (Shift)
+                {
+                case 0:
+                {
+                        bleKeyboard.write(KEY_DOWN_ARROW);
+                        break;
+                }
+                case 1:
+                {
+
+                        break;
+                }
+                case 2:
+                {
+
+                        break;
+                }
+                case 3:
+                {
+
+                        break;
+                }
+                }
+        }
+        break;
+        case '$': //        KEY_RIGHT_ARROW | Shift 1: Open | Shift 2: Open | Shift 3: Open
+        {
+                switch (Shift)
+                {
+                case 0:
+                {
+                        bleKeyboard.write(KEY_RIGHT_ARROW);
+                        break;
+                }
+                case 1:
+                {
+
+                        break;
+                }
+                case 2:
+                {
+
+                        break;
+                }
+                case 3:
+                {
+
+                        break;
+                }
+                }
+        }
+        break;
+        case '@': //        KEY_PAGE_DOWN | Shift 1: Open | Shift 2: Open | Shift 3: Open
+        {
+                switch (Shift)
+                {
+                case 0:
+                {
+                        bleKeyboard.write(KEY_PAGE_DOWN);
+                        break;
+                }
+                case 1:
+                {
+
+                        break;
+                }
+                case 2:
+                {
+
+                        break;
+                }
+                case 3:
+                {
+
+                        break;
+                }
+                }
+        }
+        break;
+         default:
         {
                 break;
         }
@@ -1553,6 +2373,7 @@ void loop()
 
         if (Keypad1.getKeys())
         {
+                Serial.println(Keypad1.key[i].kchar);
                 for (int i = 0; i < LIST_MAX; i++) // Scan the whole key list.
                 {
                         if (Keypad1.key[i].stateChanged) // Only find keys that have changed state.
@@ -1683,6 +2504,7 @@ void loop()
                                 }
                         }
                 }
+        
         }
 
         // https://www.best-microcontroller-projects.com/rotary-encoder.html
