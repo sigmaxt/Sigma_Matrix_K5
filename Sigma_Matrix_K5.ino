@@ -5,22 +5,22 @@
 #include <WiFi.h>
 #include <HTTPClient.h>
 #include <Wire.h>
-#include <PubSubClient.h>         // https://github.com/knolleary/pubsubclient
-#include <Keypad.h>               // https://github.com/Chris--A/Keypad
-#include <BleKeyboard.h>          // https://github.com/T-vK/ESP32-BLE-Keyboard
-#include <Adafruit_SSD1306.h>     // https://github.com/adafruit/Adafruit_SSD1306 https://github.com/adafruit/Adafruit-GFX-Library
-#include <SchedTask.h>            // https://github.com/Nospampls/SchedTask
-#include "AiEsp32RotaryEncoder.h" // https://github.com/igorantolic/ai-esp32-rotary-encoder
+#include <PubSubClient.h>     // https://github.com/knolleary/pubsubclient
+#include <Keypad.h>           // https://github.com/Chris--A/Keypad
+#include <BleKeyboard.h>      // https://github.com/T-vK/ESP32-BLE-Keyboard
+#include <Adafruit_SSD1306.h> // https://github.com/adafruit/Adafruit_SSD1306 https://github.com/adafruit/Adafruit-GFX-Library
+#include <SchedTask.h>        // https://github.com/Nospampls/SchedTask
 
 //#include <ezButton.h>             // https://github.com/ArduinoGetStarted/button
 int i;
 const byte ledPin = 2;
 int Shift = 0;
-int Mode = 0;
-int ModeMax = 3;
 int dispSleepT = 5000;
-int keyReltime = 50;
+int keyReltime = 10;
 bool MQTT = true;
+int Mode = 0;
+int ModeMax = 4;
+String MadeLables[5] = {"Macro", "singleKey", "keyCode", "pcKeypad", "Android"};
 String Shifted;
 String Unshifted;
 String msg; // Serial message for key PRESSED HOLD RELASED IDLE
@@ -33,11 +33,11 @@ char keys[ROWS][COLS] = {
     {'1', '2', '3', 'A', 'M'},
     {'4', '5', '6', 'B', 'L'},
     {'7', '8', '9', 'C', 'K'},
-    {'*', '0', '#', 'D', 'J'},
+    {'-', '0', '=', 'D', 'J'},
     {'E', 'F', 'G', 'H', 'I'},
     {'N', 'O', 'P', 'Q', 'R'},
     {'S', 'T', 'U', 'V', 'W'},
-    {'X', 'Y', 'Z', '$', '@'}};
+    {'X', 'Y', 'Z', '!', '@'}};
 String fullKey;
 byte rowPins[ROWS] = {33, 25, 26, 27, 13, 23, 14, 12}; // connect to the row pinouts of the Keypad1
 byte colPins[COLS] = {19, 18, 17, 16, 4};              // connect to the column pinouts of the Keypad1
@@ -45,7 +45,8 @@ byte colPins[COLS] = {19, 18, 17, 16, 4};              // connect to the column 
 void DispOff();
 SchedTask taskDispOff(NEVER, ONESHOT, DispOff);
 
-AiEsp32RotaryEncoder rotaryEncoder = AiEsp32RotaryEncoder(ROTARY_ENCODER_A_PIN, ROTARY_ENCODER_B_PIN, ROTARY_ENCODER_BUTTON_PIN, -1, ROTARY_ENCODER_STEPS);
+static uint8_t prevNextCode = 0;
+static uint16_t store = 0;
 
 Keypad Keypad1 = Keypad(makeKeymap(keys), rowPins, colPins, ROWS, COLS);
 
@@ -56,11 +57,6 @@ BleKeyboard bleKeyboard("Sigma_Matrix_K5", "Sigma", 100);
 WiFiClient espClientK5;
 
 PubSubClient mqttclient(espClientK5);
-
-void IRAM_ATTR readEncoderISR()
-{
-        rotaryEncoder.readEncoder_ISR();
-}
 
 void wificn() // Connect to WiFi
 {
@@ -172,6 +168,67 @@ void httpReq(String serverPath)
         }
 }
 
+void temp() // Template
+{
+        switch (KeyPressed)
+        {
+        case '1': //       Shift 0 | Shift 1: | Shift 2: | Shift 3:
+        {
+                switch (Shift)
+                {
+                case 0:
+                {
+
+                        break;
+                }
+                case 1:
+                {
+
+                        break;
+                }
+                case 2:
+                {
+
+                        break;
+                }
+                case 3:
+                {
+
+                        break;
+                }
+                }
+        }
+        break;
+        case '2': //       Shift 0 | Shift 1: | Shift 2: | Shift 3:
+        {
+                switch (Shift)
+                {
+                case 0:
+                {
+
+                        break;
+                }
+                case 1:
+                {
+
+                        break;
+                }
+                case 2:
+                {
+
+                        break;
+                }
+                case 3:
+                {
+
+                        break;
+                }
+                }
+        }
+        break;
+        }
+}
+
 void macro() // Mode 0
 {
         switch (KeyPressed)
@@ -228,6 +285,7 @@ void macro() // Mode 0
                         bleKeyboard.press(KEY_LEFT_CTRL);
                         bleKeyboard.press('k');
                         bleKeyboard.press('0');
+                        bleKeyboard.press('NULLu');
                         delay(keyReltime);
                         bleKeyboard.releaseAll();
                         break;
@@ -260,7 +318,10 @@ void macro() // Mode 0
                 {
                 case 0:
                 {
-
+                        bleKeyboard.press(KEY_LEFT_CTRL);
+                        bleKeyboard.press(KEY_LEFT_GUI);
+                        delay(keyReltime);
+                        bleKeyboard.releaseAll();
                         break;
                 }
                 case 1:
@@ -637,7 +698,7 @@ void macro() // Mode 0
                 }
         }
         break;
-        case '*': //        Kodi_LEFT_ARROW | Shift 1: -10 | Shift 2: Open | Shift 3: Open
+        case '-': //        Kodi_LEFT_ARROW | Shift 1: -10 | Shift 2: Open | Shift 3: Open
         {
                 switch (Shift)
                 {
@@ -695,7 +756,7 @@ void macro() // Mode 0
                 }
         }
         break;
-        case '#': //        Kodi_RIGHT_ARROW | Shift 1: +10 | Shift 2: OPEN | Shift 3: OPEN
+        case '=': //        Kodi_RIGHT_ARROW | Shift 1: +10 | Shift 2: OPEN | Shift 3: OPEN
         {
                 switch (Shift)
                 {
@@ -779,7 +840,7 @@ void macro() // Mode 0
                 }
         }
         break;
-         case 'N': //   KEY_DELETE | Shift 1: Open | Shift 2: Open | Shift 3: Open
+        case 'N': //   KEY_DELETE | Shift 1: Open | Shift 2: Open | Shift 3: Open
         {
                 switch (Shift)
                 {
@@ -1053,7 +1114,7 @@ void macro() // Mode 0
                 }
         }
         break;
- 
+
         case 'X': //        KEY_END | Shift 1: Open | Shift 2: Open | Shift 3: Open
         {
                 switch (Shift)
@@ -1135,7 +1196,7 @@ void macro() // Mode 0
                 }
         }
         break;
-        case '$': //        KEY_RIGHT_ARROW | Shift 1: Open | Shift 2: Open | Shift 3: Open
+        case '!': //        KEY_RIGHT_ARROW | Shift 1: Open | Shift 2: Open | Shift 3: Open
         {
                 switch (Shift)
                 {
@@ -1688,7 +1749,7 @@ void pcKeypad() // Mode 3
                 }
         }
         break;
-        case '*': //    KEY_NUM_PERIOD | KEY_F22 | Open | Open
+        case '-': //    KEY_NUM_PERIOD | KEY_F22 | Open | Open
         {
                 switch (Shift)
                 {
@@ -1743,7 +1804,7 @@ void pcKeypad() // Mode 3
                 }
         }
         break;
-        case '#': //    KEY_NUM_PERIOD | KEY_F24 | Open | Open
+        case '=': //    KEY_NUM_PERIOD | KEY_F24 | Open | Open
         {
                 switch (Shift)
                 {
@@ -1851,7 +1912,7 @@ void pcKeypad() // Mode 3
                 }
         }
         break;
-         case 'N': //   KEY_DELETE | Shift 1: Open | Shift 2: Open | Shift 3: Open
+        case 'N': //   KEY_DELETE | Shift 1: Open | Shift 2: Open | Shift 3: Open
         {
                 switch (Shift)
                 {
@@ -2125,7 +2186,7 @@ void pcKeypad() // Mode 3
                 }
         }
         break;
- 
+
         case 'X': //        KEY_END | Shift 1: Open | Shift 2: Open | Shift 3: Open
         {
                 switch (Shift)
@@ -2207,7 +2268,7 @@ void pcKeypad() // Mode 3
                 }
         }
         break;
-        case '$': //        KEY_RIGHT_ARROW | Shift 1: Open | Shift 2: Open | Shift 3: Open
+        case '!': //        KEY_RIGHT_ARROW | Shift 1: Open | Shift 2: Open | Shift 3: Open
         {
                 switch (Shift)
                 {
@@ -2261,7 +2322,7 @@ void pcKeypad() // Mode 3
                 }
         }
         break;
-         default:
+        default:
         {
                 break;
         }
@@ -2285,26 +2346,7 @@ void UpdateOled(int Mode)
         display.setCursor(0, 0);
         display.setTextSize(2);
         display.setTextColor(SSD1306_WHITE);
-
-        switch (Mode)
-
-        {
-        case 0:
-                display.println("Macro  ");
-                break;
-
-        case 1:
-                display.println("Single Key");
-                break;
-        case 2:
-
-                display.println("Key Code");
-                break;
-
-        case 3:
-                display.println("PC KeyPad");
-                break;
-        }
+        display.println(MadeLables[Mode]);
         display.print("Mode: ");
         display.println(Mode);
         display.print("Shift: ");
@@ -2317,6 +2359,32 @@ void DispOff()
 {
         display.clearDisplay();
         display.display();
+}
+
+int8_t read_rotary()
+{
+        static int8_t rot_enc_table[] = {0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0};
+
+        prevNextCode <<= 2;
+        if (digitalRead(ROTARY_DATA))
+                prevNextCode |= 0x02;
+        if (digitalRead(ROTARY_CLK))
+                prevNextCode |= 0x01;
+        prevNextCode &= 0x0f;
+
+        // If valid then store as 16 bit data.
+        if (rot_enc_table[prevNextCode])
+        {
+                store <<= 4;
+                store |= prevNextCode;
+                // if (store==0xd42b) return 1;
+                // if (store==0xe817) return -1;
+                if ((store & 0xff) == 0x2b)
+                        return -1;
+                if ((store & 0xff) == 0x17)
+                        return 1;
+        }
+        return 0;
 }
 
 void setup()
@@ -2332,6 +2400,11 @@ void setup()
         wificn();
         mqttcn();
 
+        pinMode(ROTARY_CLK, INPUT);
+        pinMode(ROTARY_CLK, INPUT_PULLUP);
+        pinMode(ROTARY_DATA, INPUT);
+        pinMode(ROTARY_DATA, INPUT_PULLUP);
+
         // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
         if (!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS))
         {
@@ -2346,11 +2419,6 @@ void setup()
         display.setRotation(2);
         display.display();
         UpdateOled(Mode);
-
-        rotaryEncoder.begin();
-        rotaryEncoder.setup(readEncoderISR);
-        rotaryEncoder.setBoundaries(0, 2, true); // minValue, maxValue, circleValues true|false (when max go to min and vice versa)
-        // rotaryEncoder.setAcceleration(250);
 
         taskDispOff.setNext(dispSleepT);
         pinMode(2, OUTPUT);
@@ -2461,8 +2529,17 @@ void loop()
                                                 case 3: // PC Keypad
                                                 {
 
-                                                        KeyPressed = Keypad1.key[i].kchar;
                                                         pcKeypad();
+                                                        break;
+                                                }
+                                                case 4: // Android
+                                                {
+
+                                                        break;
+                                                }
+                                                case 5: // Open
+                                                {
+
                                                         break;
                                                 }
                                                 }
@@ -2504,25 +2581,35 @@ void loop()
                                 }
                         }
                 }
-        
         }
 
         // https://www.best-microcontroller-projects.com/rotary-encoder.html
-        if (rotaryEncoder.encoderChanged())
+
+        static int8_t c, val;
+
+        if (val = read_rotary())
         {
-                Mode = ++Mode;
-                if (Mode > ModeMax)
+                c += val;
+                if (prevNextCode == 0x0b)
                 {
-                        Mode = 0;
+
+                        Mode = --Mode;
+                        if (Mode < 0)
+                        {
+                                Mode = ModeMax;
+                        }
+                        UpdateOled(Mode);
                 }
-                UpdateOled(Mode);
-                Serial.println(rotaryEncoder.readEncoder());
-        }
 
-        if (rotaryEncoder.isEncoderButtonClicked())
-        {
-
-                Serial.println("button pressed");
+                if (prevNextCode == 0x07)
+                {
+                        Mode = ++Mode;
+                        if (Mode > ModeMax)
+                        {
+                                Mode = 0;
+                        }
+                        UpdateOled(Mode);
+                }
         }
 
         if (WiFi.status() != WL_CONNECTED)
