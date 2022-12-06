@@ -14,16 +14,16 @@
 //#include <ezButton.h>             // https://github.com/ArduinoGetStarted/button
 int i;
 const byte ledPin = 2;
+int Lock = 0;
 int Shift = 0;
 int dispSleepT = 5000;
 int keyReltime = 10;
 bool MQTT = true;
 int Mode = 0;
 int ModeMax = 4;
-String MadeLables[5] = {"Macro", "singleKey", "keyCode", "pcKeypad", "Android"};
+String MadeLables[5] = {"   Macro", "Single Key", "key Code", "PC Keypad", "  Android"};
 String Shifted;
 String Unshifted;
-String msg; // Serial message for key PRESSED HOLD RELASED IDLE
 unsigned long loopCount;
 unsigned long startTime;
 char KeyPressed;
@@ -285,7 +285,6 @@ void macro() // Mode 0
                         bleKeyboard.press(KEY_LEFT_CTRL);
                         bleKeyboard.press('k');
                         bleKeyboard.press('0');
-                        bleKeyboard.press('NULLu');
                         delay(keyReltime);
                         bleKeyboard.releaseAll();
                         break;
@@ -547,7 +546,7 @@ void macro() // Mode 0
                 }
         }
         break;
-        case '7': //        Kodi_BACKSPACE | Shift 1: Open | Shift 2: Open | Shift 3: Monitor Off
+        case '7': //        Kodi_BACKSPACE | Shift 1: Monitor Off | Shift 2: Open | Shift 3: Open
         {
                 switch (Shift)
                 {
@@ -559,21 +558,17 @@ void macro() // Mode 0
                         }
                         case 1:
                         {
-                                bleKeyboard.write(KEY_MEDIA_VOLUME_UP);
-                                // delay(keyReltime);
-                                // bleKeyboard.releaseAll();
+                                httpReq("http://192.168.1.122:8655/monitor?mode=off");
                                 break;
                         }
                         case 2:
                         {
-                                bleKeyboard.write(KEY_MEDIA_VOLUME_DOWN);
-                                // delay(keyReltime);
-                                // bleKeyboard.releaseAll();
+
                                 break;
                         }
                         case 3:
                         {
-                                httpReq("http://192.168.1.122:8655/monitor?mode=off");
+
                                 break;
                         }
                         }
@@ -1476,6 +1471,7 @@ void pcKeypad() // Mode 3
                 }
         }
         break;
+
         case '4': //    KEY_NUM_4 | KEY_F16 | Open | Open
         {
                 switch (Shift)
@@ -1611,6 +1607,7 @@ void pcKeypad() // Mode 3
                 }
         }
         break;
+
         case '7': //    KEY_NUM_7 | KEY_F19 | Open | Open
         {
                 switch (Shift)
@@ -1749,6 +1746,7 @@ void pcKeypad() // Mode 3
                 }
         }
         break;
+
         case '-': //    KEY_NUM_PERIOD | KEY_F22 | Open | Open
         {
                 switch (Shift)
@@ -1885,6 +1883,7 @@ void pcKeypad() // Mode 3
                 }
         }
         break;
+
         case 'H': //    KEY_BACKSPACE | Open | Open | Open
         {
                 switch (Shift)
@@ -1912,6 +1911,7 @@ void pcKeypad() // Mode 3
                 }
         }
         break;
+
         case 'N': //   KEY_DELETE | Shift 1: Open | Shift 2: Open | Shift 3: Open
         {
                 switch (Shift)
@@ -2347,6 +2347,8 @@ void UpdateOled(int Mode)
         display.setTextSize(2);
         display.setTextColor(SSD1306_WHITE);
         display.println(MadeLables[Mode]);
+        display.print("Lock");
+        display.println(Lock);
         display.print("Mode: ");
         display.println(Mode);
         display.print("Shift: ");
@@ -2377,12 +2379,14 @@ int8_t read_rotary()
         {
                 store <<= 4;
                 store |= prevNextCode;
-                // if (store==0xd42b) return 1;
-                // if (store==0xe817) return -1;
-                if ((store & 0xff) == 0x2b)
-                        return -1;
-                if ((store & 0xff) == 0x17)
+                if (store == 0xd42b)
                         return 1;
+                if (store == 0xe817)
+                        return -1;
+                // if ((store & 0xff) == 0x2b)
+                //         return -1;
+                // if ((store & 0xff) == 0x17)
+                //         return 1;
         }
         return 0;
 }
@@ -2392,7 +2396,6 @@ void setup()
         Serial.begin(115200);
         loopCount = 0;
         startTime = millis();
-        msg = "";
 
         delay(10);
         Serial.println('\n');
@@ -2401,9 +2404,10 @@ void setup()
         mqttcn();
 
         pinMode(ROTARY_CLK, INPUT);
-        pinMode(ROTARY_CLK, INPUT_PULLUP);
+        // pinMode(ROTARY_CLK, INPUT_PULLUP);
         pinMode(ROTARY_DATA, INPUT);
-        pinMode(ROTARY_DATA, INPUT_PULLUP);
+        // pinMode(ROTARY_DATA, INPUT_PULLUP);
+        pinMode(ROTARY_SW, INPUT);
 
         // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
         if (!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS))
@@ -2450,7 +2454,6 @@ void loop()
                                 {
                                 case PRESSED:
                                 {
-                                        msg = " PRESSED. ";
                                         switch (Keypad1.key[i].kchar)
                                         {
                                         case 'E':
@@ -2469,6 +2472,18 @@ void loop()
                                         {
                                                 Shift = 3;
                                                 digitalWrite(ledPin, HIGH);
+                                                break;
+                                        }
+                                        case 'H':
+                                        {
+                                                Lock = (!Lock);
+                                                if (!Lock)
+                                                {
+                                                        Shift = 0;
+                                                        Mode = 0;
+                                                        digitalWrite(ledPin, LOW);
+                                                }
+                                                UpdateOled(Mode);
                                                 break;
                                         }
                                         case 'I':
@@ -2554,21 +2569,23 @@ void loop()
                                         switch (Keypad1.key[i].kchar)
                                         {
                                         case 'E':
-                                        {
-                                                Shift = 0;
-                                                digitalWrite(ledPin, LOW);
-                                                break;
-                                        }
                                         case 'F':
-                                        {
-                                                Shift = 0;
-                                                digitalWrite(ledPin, LOW);
-                                                break;
-                                        }
                                         case 'G':
                                         {
-                                                Shift = 0;
+                                                if (Lock)
+                                                {
+                                                        UpdateOled(Mode);
+                                                        break;
+                                                }
+                                                else
+                                                        Shift = 0;
                                                 digitalWrite(ledPin, LOW);
+                                                UpdateOled(Mode);
+                                                break;
+                                        }
+                                        case 'H':
+                                        {
+
                                                 break;
                                         }
                                         case 'I':
@@ -2593,28 +2610,125 @@ void loop()
                 if (prevNextCode == 0x0b)
                 {
 
-                        Mode = --Mode;
-                        if (Mode < 0)
+                        switch (digitalRead(ROTARY_SW))
                         {
-                                Mode = ModeMax;
+                        case 1:
+                        {
+                                switch (Shift)
+                                {
+                                case 0:
+                                {
+                                        Mode = --Mode;
+                                        if (Mode < 0)
+                                        {
+                                                Mode = ModeMax;
+                                        }
+                                        UpdateOled(Mode);
+                                        break;
+                                }
+                                case 1:
+                                {
+                                        Mode = --Mode;
+                                        if (Mode < 0)
+                                        {
+                                                Mode = ModeMax;
+                                        }
+                                        UpdateOled(Mode);
+                                        break;
+                                }
+                                case 2:
+                                {
+                                        Mode = --Mode;
+                                        if (Mode < 0)
+                                        {
+                                                Mode = ModeMax;
+                                        }
+                                        UpdateOled(Mode);
+                                        break;
+                                }
+                                case 3:
+                                {
+                                        Mode = --Mode;
+                                        if (Mode < 0)
+                                        {
+                                                Mode = ModeMax;
+                                        }
+                                        UpdateOled(Mode);
+                                        break;
+                                }
+                                }
+                                break;
                         }
-                        UpdateOled(Mode);
+                        case 0:
+                        {
+                                bleKeyboard.write(KEY_MEDIA_VOLUME_DOWN);
+                                break;
+                        }
+                        }
                 }
 
                 if (prevNextCode == 0x07)
                 {
-                        Mode = ++Mode;
-                        if (Mode > ModeMax)
+                        switch (digitalRead(ROTARY_SW))
                         {
-                                Mode = 0;
+                        case 1:
+                        {
+                                switch (Shift)
+                                {
+                                case 0:
+                                {
+                                        Mode = ++Mode;
+                                        if (Mode > ModeMax)
+                                        {
+                                                Mode = 0;
+                                        }
+                                        UpdateOled(Mode);
+                                        break;
+                                }
+                                case 1:
+                                {
+                                        Mode = ++Mode;
+                                        if (Mode > ModeMax)
+                                        {
+                                                Mode = 0;
+                                        }
+                                        UpdateOled(Mode);
+                                        break;
+                                }
+                                case 2:
+                                {
+                                        Mode = ++Mode;
+                                        if (Mode > ModeMax)
+                                        {
+                                                Mode = 0;
+                                        }
+                                        UpdateOled(Mode);
+                                        break;
+                                }
+                                case 3:
+                                {
+                                        Mode = ++Mode;
+                                        if (Mode > ModeMax)
+                                        {
+                                                Mode = 0;
+                                        }
+                                        UpdateOled(Mode);
+                                        break;
+                                }
+                                }
+                                break;
                         }
-                        UpdateOled(Mode);
+                        case 0:
+                        {
+                                bleKeyboard.write(KEY_MEDIA_VOLUME_UP);
+                                break;
+                        }
+                        }
                 }
         }
 
         if (WiFi.status() != WL_CONNECTED)
         {
-                Serial.println("Going to wificn");
                 wificn();
         }
 
