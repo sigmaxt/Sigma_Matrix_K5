@@ -10,26 +10,27 @@
 #include <Adafruit_SSD1306.h> // https://github.com/adafruit/Adafruit_SSD1306 https://github.com/adafruit/Adafruit-GFX-Library
 #include <SchedTask.h>        // https://github.com/Nospampls/SchedTask
 // #include "SPIFFS.h"
-//#include <ezButton.h>             // https://github.com/ArduinoGetStarted/button
+// #include <ezButton.h>             // https://github.com/ArduinoGetStarted/button
 
 int i;
-const byte ledPin = 2;
+// const byte ledPin = 2;
 int Lock = 0;
 int Shift = 0;
 int dispSleepT = 5000;
 int keyReltime = 10;
 bool MQTT = true;
 int set = 0;
+int setmax = 1;
 int Mode = 0;
 int ModeMax = 4;
-String MadeLables[5] = {"   Macro", "Single Key", "key Code", "PC Keypad", " Testing 0"};
+String Mode_Lables[5] = {"Macro", "Single Key", "key Code", "PC Keypad", "Testing 0"};
 String Shifted;
 String Unshifted;
 unsigned long loopCount;
 unsigned long startTime;
 char KeyPressed;
 int Kcode;
-const byte ROWS = 8;
+const byte ROWS = 11;
 const byte COLS = 5;
 
 char keys[ROWS][COLS] = {
@@ -40,15 +41,18 @@ char keys[ROWS][COLS] = {
     {'E', 'F', 'G', 'H', 'I'},
     {'N', 'O', 'P', 'Q', 'R'},
     {'S', 'T', 'U', 'V', 'W'},
-    {'X', 'Y', 'Z', '!', '@'}};
+    {'X', 'Y', 'Z', '!', '@'},
+    {'a', 'b', 'c', 'd', 'e'},
+    {'f', 'g', 'h', 'i', 'j'},
+    {'k', 'l', 'm', 'n', '>'}};
 
-int SET[2][40][5] =
+int SET[2][55][5] =
     // Set 0
-    {{{100, 0, 0, 103, 164}, // 0
-      {101, 0, 0, 102, 165}, // 1
-      {104, 0, 0, 105, 166}, // 2
-      {117, 0, 0, 0, 174},   // 3
-      {107, 123, 0, 124, 0}, // 4
+    {{{100, 0, 0, 103, 164},     // 0
+      {101, 0, 0, 102, 165},     // 1
+      {104, 0, 0, 105, 166},     // 2
+      {117, 107, 108, 109, 174}, // 3
+      {107, 123, 0, 124, 0},     // 4
 
       {125, 106, 0, 0, 167}, // 5
       {126, 127, 0, 0, 168}, // 6
@@ -86,31 +90,49 @@ int SET[2][40][5] =
       {189, 0, 0, 0, 189}, // 33
       {190, 0, 0, 0, 190}, // 34
 
-      {191, 0, 0, 0, 191},  // 35
-      {192, 0, 0, 0, 192},  // 36
-      {193, 0, 0, 0, 193},  // 37
-      {194, 0, 0, 0, 194},  // 38
-      {196, 0, 0, 0, 196}}, // 39
+      {191, 0, 0, 0, 191}, // 35
+      {192, 0, 0, 0, 192}, // 36
+      {193, 0, 0, 0, 193}, // 37
+      {194, 0, 0, 0, 194}, // 38
+      {196, 0, 0, 0, 196}, // 39
+
+      {107, 0, 0, 0, 0}, // 40
+      {107, 0, 0, 0, 0}, // 41
+      {107, 0, 0, 0, 0}, // 42
+      {107, 0, 0, 0, 0}, // 43
+      {107, 0, 0, 0, 0}, // 44
+
+      {107, 0, 0, 0, 0}, // 45
+      {107, 0, 0, 0, 0}, // 46
+      {107, 0, 0, 0, 0}, // 47
+      {107, 0, 0, 0, 0}, // 48
+      {107, 0, 0, 0, 0}, // 49
+
+      {107, 0, 0, 0, 0},  // 50
+      {107, 0, 0, 0, 0},  // 51
+      {107, 0, 0, 0, 0},  // 52
+      {107, 0, 0, 0, 0},  // 53
+      {107, 0, 0, 0, 0}}, // 54
 
      // Set 1
 
-     {{0, 0, 0, 0, 0}, // 0
-      {0, 0, 0, 0, 0}, // 1
-      {0, 0, 0, 0, 0}, // 2
-      {0, 0, 0, 0, 0}, // 3
-      {0, 0, 0, 0, 0}, // 4
+     {{164, 0, 0, 0, 0}, // 0
+      {165, 0, 0, 0, 0}, // 1
+      {166, 0, 0, 0, 0}, // 2
+      {0, 0, 0, 0, 0},   // 3
+      {0, 0, 0, 0, 0},   // 4
 
-      {0, 0, 0, 0, 0}, // 5
-      {0, 0, 0, 0, 0}, // 6
-      {0, 0, 0, 0, 0}, // 7
-      {0, 0, 0, 0, 0}, // 8
-      {0, 0, 0, 0, 0}, // 9
+      {167, 0, 0, 0, 0}, // 5
+      {168, 0, 0, 0, 0}, // 6
+      {169, 0, 0, 0, 0}, // 7
+      {0, 0, 0, 0, 0},   // 8
+      {0, 0, 0, 0, 0},   // 9
 
-      {0, 0, 0, 0, 0}, // 10
-      {0, 0, 0, 0, 0}, // 11
-      {0, 0, 0, 0, 0}, // 12
-      {0, 0, 0, 0, 0}, // 13
-      {0, 0, 0, 0, 0}, // 14
+      {170, 0, 0, 0, 0}, // 10
+      {171, 0, 0, 0, 0}, // 11
+      {172, 0, 0, 0, 0}, // 12
+      {0, 0, 0, 0, 0},   // 13
+      {0, 0, 0, 0, 0},   // 14
 
       {0, 0, 0, 0, 0}, // 15
       {0, 0, 0, 0, 0}, // 16
@@ -136,15 +158,33 @@ int SET[2][40][5] =
       {0, 0, 0, 0, 0}, // 33
       {0, 0, 0, 0, 0}, // 34
 
-      {0, 0, 0, 0, 0},   // 35
-      {0, 0, 0, 0, 0},   // 36
-      {0, 0, 0, 0, 0},   // 37
-      {0, 0, 0, 0, 0},   // 38
-      {0, 0, 0, 0, 0}}}; // 39
+      {0, 0, 0, 0, 0}, // 35
+      {0, 0, 0, 0, 0}, // 36
+      {0, 0, 0, 0, 0}, // 37
+      {0, 0, 0, 0, 0}, // 38
+      {0, 0, 0, 0, 0}, // 39
+
+      {0, 0, 0, 0, 0}, // 40
+      {0, 0, 0, 0, 0}, // 41
+      {0, 0, 0, 0, 0}, // 42
+      {0, 0, 0, 0, 0}, // 43
+      {0, 0, 0, 0, 0}, // 44
+
+      {0, 0, 0, 0, 0}, // 45
+      {0, 0, 0, 0, 0}, // 46
+      {0, 0, 0, 0, 0}, // 47
+      {0, 0, 0, 0, 0}, // 48
+      {0, 0, 0, 0, 0}, // 49
+
+      {0, 0, 0, 0, 0},   // 50
+      {0, 0, 0, 0, 0},   // 51
+      {0, 0, 0, 0, 0},   // 52
+      {0, 0, 0, 0, 0},   // 53
+      {0, 0, 0, 0, 0}}}; // 54
 
 String fullKey;
-byte rowPins[ROWS] = {33, 25, 26, 27, 13, 23, 14, 12}; // connect to the row pinouts of the Keypad1
-byte colPins[COLS] = {19, 18, 17, 16, 4};              // connect to the column pinouts of the Keypad1
+byte rowPins[ROWS] = {33, 25, 26, 27, 13, 23, 14, 12, 32, 5, 15}; // connect to the row pinouts of the Keypad1
+byte colPins[COLS] = {19, 18, 17, 16, 4};                         // connect to the column pinouts of the Keypad1
 
 void DispOff();
 SchedTask taskDispOff(NEVER, ONESHOT, DispOff);
@@ -230,6 +270,7 @@ void mqttcallback(char *topic, byte *message, unsigned int length)
         // Changes the output state according to the message
         if (String(topic) == "esp32/output")
         {
+                Serial.println(messageTemp);
                 Serial.print("Changing output to ");
                 if (messageTemp == "on")
                 {
@@ -281,7 +322,6 @@ void CMD_List(int CMD)
                 bleKeyboard.releaseAll();
                 break;
         }
-        break;
         case 101: // Compile
         {
                 bleKeyboard.press(KEY_LEFT_CTRL);
@@ -291,7 +331,6 @@ void CMD_List(int CMD)
                 bleKeyboard.releaseAll();
                 break;
         }
-        break;
         case 102: // Comment
         {
                 bleKeyboard.press(KEY_LEFT_CTRL);
@@ -301,7 +340,6 @@ void CMD_List(int CMD)
                 bleKeyboard.releaseAll();
                 break;
         }
-        break;
         case 103: // Uncomment
         {
                 bleKeyboard.press(KEY_LEFT_CTRL);
@@ -311,7 +349,6 @@ void CMD_List(int CMD)
                 bleKeyboard.releaseAll();
                 break;
         }
-        break;
         case 104: // Collapse
         {
                 bleKeyboard.press(KEY_LEFT_CTRL);
@@ -321,7 +358,6 @@ void CMD_List(int CMD)
                 bleKeyboard.releaseAll();
                 break;
         }
-        break;
         case 105: // Expand
         {
                 bleKeyboard.press(KEY_LEFT_CTRL);
@@ -331,7 +367,6 @@ void CMD_List(int CMD)
                 bleKeyboard.releaseAll();
                 break;
         }
-        break;
         case 106: // RootFolder
         {
                 bleKeyboard.press(KEY_LEFT_CTRL);
@@ -340,145 +375,121 @@ void CMD_List(int CMD)
                 bleKeyboard.releaseAll();
                 break;
         }
-        break;
         case 107: // Bulb-01
         {
                 httpReq("http://192.168.1.151/control?cmd=event,ToggleMCP");
                 break;
         }
-        break;
         case 108: // Bulb-02
         {
                 httpReq("http://192.168.1.152/control?cmd=event,ToggleMCP");
                 break;
         }
-        break;
         case 109: // Bulb-03
         {
                 httpReq("http://192.168.1.153/control?cmd=event,ToggleMCP");
                 break;
         }
-        break;
         case 110: // Outlet-01
         {
                 httpReq("http://192.168.1.141/control?cmd=event,Toggle");
                 break;
         }
-        break;
         case 111: // Outlet-02
         {
                 httpReq("http://192.168.1.142/control?cmd=event,Toggle");
                 break;
         }
-        break;
         case 112: // Outlet-03
         {
                 httpReq("http://192.168.1.143/control?cmd=event,Toggle");
                 break;
         }
-        break;
         case 113: // Open
         {
 
                 break;
         }
-        break;
         case 114: // Open
         {
 
                 break;
         }
-        break;
         case 115: // Open
         {
 
                 break;
         }
-        break;
         case 116: // Outlet-04
         {
                 httpReq("http://192.168.1.144/control?cmd=event,Toggle");
                 break;
         }
-        break;
         case 117: // Outlet-05
         {
                 httpReq("http://192.168.1.145/control?cmd=event,Toggle");
                 break;
         }
-        break;
         case 118: // Outlet-06
         {
                 httpReq("http://192.168.1.146/control?cmd=event,Toggle");
                 break;
         }
-        break;
         case 119: // Outlet-07
         {
                 httpReq("http://192.168.1.147/control?cmd=event,Toggle");
                 break;
         }
-        break;
         case 120: // Outlet-08
         {
                 httpReq("http://192.168.1.148/control?cmd=event,Toggle");
                 break;
         }
-        break;
         case 121: // Outlet-09
         {
                 httpReq("http://192.168.1.149/control?cmd=event,Toggle");
                 break;
         }
-        break;
         case 122: // Outlet-10
         {
                 httpReq("http://192.168.1.140/control?cmd=event,Toggle");
                 break;
         }
-        break;
         case 123: // CMD_Home
         {
                 mqttclient.publish("/routines", "1");
                 break;
         }
-        break;
         case 124: // CMD_Leave
         {
                 mqttclient.publish("/routines", "0");
                 break;
         }
-        break;
         case 125: // Kodi Stop
         {
                 mqttclient.publish("/Kodi/CMD", "Stop");
                 break;
         }
-        break;
         case 126: // Kodi Pause
         {
                 mqttclient.publish("/Kodi/CMD", "Pause");
                 break;
         }
-        break;
         case 127: // Kodi Zoom
         {
                 mqttclient.publish("/Kodi/CMD", "Z");
                 break;
         }
-        break;
         case 128: // OverH1/0
         {
                 mqttclient.publish("/MatrixR/CMD", "12");
                 break;
         }
-        break;
         case 129: // OverH10%
         {
                 mqttclient.publish("/MatrixR/CMD", "13");
                 break;
         }
-        break;
         case 130: // Copy
         {
                 bleKeyboard.press(KEY_LEFT_CTRL);
@@ -487,7 +498,6 @@ void CMD_List(int CMD)
                 bleKeyboard.releaseAll();
                 break;
         }
-        break;
         case 131: // Paste
         {
                 bleKeyboard.press(KEY_LEFT_CTRL);
@@ -496,7 +506,6 @@ void CMD_List(int CMD)
                 bleKeyboard.releaseAll();
                 break;
         }
-        break;
         case 132: // Cut
         {
                 bleKeyboard.press(KEY_LEFT_CTRL);
@@ -505,55 +514,46 @@ void CMD_List(int CMD)
                 bleKeyboard.releaseAll();
                 break;
         }
-        break;
         case 133: // Kodi Back
         {
                 mqttclient.publish("/Kodi/CMD", "Back");
                 break;
         }
-        break;
         case 134: // Mon Off
         {
                 httpReq("http://192.168.1.122:8655/monitor?mode=off");
                 break;
         }
-        break;
         case 135: // Kodi Up
         {
                 mqttclient.publish("/Kodi/CMD", "Up");
                 break;
         }
-        break;
         case 136: // Kodi+30
         {
                 mqttclient.publish("/Kodi/CMD", "bFwd");
                 break;
         }
-        break;
         case 137: // Hibernate
         {
                 httpReq("http://192.168.1.122:8655/pc?mode=hibernate");
                 break;
         }
-        break;
         case 138: // Open
         {
 
                 break;
         }
-        break;
         case 139: // Kodi Select
         {
                 mqttclient.publish("/Kodi/CMD", "Select");
                 break;
         }
-        break;
         case 140: // Kodi Context
         {
                 mqttclient.publish("/Kodi/CMD", "context");
                 break;
         }
-        break;
         case 141: // ReDo
         {
                 bleKeyboard.press(KEY_LEFT_CTRL);
@@ -563,43 +563,36 @@ void CMD_List(int CMD)
                 bleKeyboard.releaseAll();
                 break;
         }
-        break;
         case 142: // Kodi Left
         {
                 mqttclient.publish("/Kodi/CMD", "Left");
                 break;
         }
-        break;
         case 143: // Kodi-10
         {
                 mqttclient.publish("/Kodi/CMD", "Rew");
                 break;
         }
-        break;
         case 144: // Kodi Down
         {
                 mqttclient.publish("/Kodi/CMD", "Down");
                 break;
         }
-        break;
         case 145: // Kodi-30
         {
                 mqttclient.publish("/Kodi/CMD", "bRew");
                 break;
         }
-        break;
         case 146: // Kodi Right
         {
                 mqttclient.publish("/Kodi/CMD", "Right");
                 break;
         }
-        break;
         case 147: // Kodi+10
         {
                 mqttclient.publish("/Kodi/CMD", "Fwd");
                 break;
         }
-        break;
         case 148: // UnDo
         {
                 bleKeyboard.press(KEY_LEFT_CTRL);
@@ -608,13 +601,11 @@ void CMD_List(int CMD)
                 bleKeyboard.releaseAll();
                 break;
         }
-        break;
         case 149: // KEY_DELETE
         {
                 bleKeyboard.write(KEY_DELETE);
                 break;
         }
-        break;
         case 150: // KEY_S_TAB
         {
                 bleKeyboard.press(KEY_LEFT_SHIFT);
@@ -623,79 +614,66 @@ void CMD_List(int CMD)
                 bleKeyboard.releaseAll();
                 break;
         }
-        break;
         case 151: // KEY_ESC
         {
                 bleKeyboard.write(KEY_ESC);
                 break;
         }
-        break;
         case 152: // KEY_TAB
         {
                 bleKeyboard.write(KEY_TAB);
                 break;
         }
-        break;
         case 153: // KEY_INSERT
         {
                 bleKeyboard.write(KEY_INSERT);
                 break;
         }
-        break;
         case 154: // KEY_HOME
         {
                 bleKeyboard.write(KEY_HOME);
                 break;
         }
-        break;
         case 155: // KEY_BACKSPACE
         {
                 bleKeyboard.write(KEY_BACKSPACE);
                 break;
         }
-        break;
         case 156: // KEY_UP_ARROW
         {
                 bleKeyboard.write(KEY_UP_ARROW);
                 break;
         }
-        break;
         case 157: // KEY_RETURN
         {
                 bleKeyboard.write(KEY_RETURN);
                 break;
         }
-        break;
         case 158: // KEY_PAGE_UP
         {
                 bleKeyboard.write(KEY_PAGE_UP);
                 break;
         }
-        break;
         case 159: // KEY_END
         {
                 bleKeyboard.write(KEY_END);
                 break;
         }
-        break;
         case 160: // KEY_LEFT_ARROW
         {
                 bleKeyboard.write(KEY_LEFT_ARROW);
                 break;
         }
-        break;
         case 161: // (KEY_DOWN_ARROW
         {
                 bleKeyboard.write(KEY_DOWN_ARROW);
                 break;
         }
-        break;
         case 162: // KEY_RIGHT_ARROW
         {
                 bleKeyboard.write(KEY_RIGHT_ARROW);
                 break;
         }
-        break;
         case 163: // KEY_PAGE_DOWN
         {
                 bleKeyboard.write(KEY_PAGE_DOWN);
@@ -2036,14 +2014,17 @@ void UpdateOled(int Mode)
         display.setCursor(0, 0);
         display.setTextSize(2);
         display.setTextColor(SSD1306_WHITE);
-        display.println(MadeLables[Mode]);
-
-        display.print(" CMD: ");
+        display.println(Mode_Lables[Mode]);
+        display.print("CMD: ");
         display.println(SET[set][Kcode][Shift]);
-        display.print("Lock:  ");
-        display.println(Lock);
-        display.print("Shift: ");
-        display.println(Shift);
+        display.print("LK: ");
+        display.print(Lock);
+        display.print(" ST:");
+        display.println(set);
+        display.print("SH:");
+        display.print(Shift);
+        display.print(" KC:");
+        display.println(Kcode);
         display.display();
         taskDispOff.setNext(dispSleepT);
 }
@@ -2114,7 +2095,7 @@ void setup()
         UpdateOled(Mode);
 
         taskDispOff.setNext(dispSleepT);
-        pinMode(2, OUTPUT);
+        // pinMode(2, OUTPUT);
 }
 
 void loop()
@@ -2148,22 +2129,22 @@ void loop()
                                         case 'E': // Shift 1
                                         {
                                                 Shift = 1;
-                                                digitalWrite(ledPin, HIGH);
-                                                // UpdateOled(Mode);
+                                                // digitalWrite(ledPin, HIGH);
+                                                UpdateOled(Mode);
                                                 break;
                                         }
                                         case 'F': // Shift 2
                                         {
                                                 Shift = 2;
-                                                digitalWrite(ledPin, HIGH);
-                                                // UpdateOled(Mode);
+                                                // digitalWrite(ledPin, HIGH);
+                                                UpdateOled(Mode);
                                                 break;
                                         }
                                         case 'G': // Shift 3
                                         {
                                                 Shift = 3;
-                                                digitalWrite(ledPin, HIGH);
-                                                // UpdateOled(Mode);
+                                                // digitalWrite(ledPin, HIGH);
+                                                UpdateOled(Mode);
                                                 break;
                                         }
                                         case 'H': // Lock
@@ -2173,9 +2154,9 @@ void loop()
                                                 {
                                                         Shift = 0;
                                                         Mode = 0;
-                                                        digitalWrite(ledPin, LOW);
+                                                        // digitalWrite(ledPin, LOW);
                                                 }
-                                                //  UpdateOled(Mode);
+                                                UpdateOled(Mode);
                                                 break;
                                         }
                                         case 'I': // Mode
@@ -2185,7 +2166,14 @@ void loop()
                                                 {
                                                 case 0:
                                                 {
-                                                        Mode = 0;
+                                                        // Mode = 0;
+                                                        set = ++set;
+                                                        if (set > setmax)
+                                                        {
+                                                                set = 0;
+                                                        }
+                                                        UpdateOled(Mode);
+                                                        break;
                                                         break;
                                                 }
                                                 case 1:
@@ -2243,8 +2231,10 @@ void loop()
                                                 }
                                                 case 3: // PC Keypad
                                                 {
-
-                                                        pcKeypad();
+                                                        set = 0;
+                                                        CMD_List(SET[set][Kcode][4]);
+                                                        UpdateOled(Mode);
+                                                        // pcKeypad();
                                                         break;
                                                 }
                                                 case 4: // Testing 1
@@ -2276,7 +2266,7 @@ void loop()
                                                 }
                                                 else
                                                         Shift = 0;
-                                                digitalWrite(ledPin, LOW);
+                                                // digitalWrite(ledPin, LOW);
                                                 UpdateOled(Mode);
                                                 break;
                                         }
