@@ -10,7 +10,7 @@
 #include <Adafruit_SSD1306.h> // https://github.com/adafruit/Adafruit_SSD1306 https://github.com/adafruit/Adafruit-GFX-Library
 #include <SchedTask.h>        // https://github.com/Nospampls/SchedTask
 // #include "SPIFFS.h"
-// #include <ezButton.h>             // https://github.com/ArduinoGetStarted/button
+// #include <ezButton.h>      // https://github.com/ArduinoGetStarted/button
 
 int i;
 // const byte ledPin = 2;
@@ -20,10 +20,10 @@ int dispSleepT = 5000;
 int keyReltime = 10;
 bool MQTT = true;
 int set = 0;
-int setmax = 1;
+int setmax = 2;
 int Mode = 0;
 int ModeMax = 4;
-String Mode_Lables[5] = {"Macro", "Single Key", "key Code", "PC Keypad", "Testing 0"};
+String Mode_Lables[5] = {"Macro", "Single Key", "key Code", "PC Keypad", "Service"};
 String Shifted;
 String Unshifted;
 unsigned long loopCount;
@@ -31,160 +31,24 @@ unsigned long startTime;
 char KeyPressed;
 int Kcode;
 const byte ROWS = 11;
-const byte COLS = 5;
+const byte COLS = 6;
 
 char keys[ROWS][COLS] = {
-    {'1', '2', '3', 'A', 'M'},
-    {'4', '5', '6', 'B', 'L'},
-    {'7', '8', '9', 'C', 'K'},
-    {'-', '0', '=', 'D', 'J'},
-    {'E', 'F', 'G', 'H', 'I'},
-    {'N', 'O', 'P', 'Q', 'R'},
-    {'S', 'T', 'U', 'V', 'W'},
-    {'X', 'Y', 'Z', '!', '@'},
-    {'a', 'b', 'c', 'd', 'e'},
-    {'f', 'g', 'h', 'i', 'j'},
-    {'k', 'l', 'm', 'n', '>'}};
-
-int SET[2][55][5] =
-    // Set 0
-    {{{100, 0, 0, 103, 164},     // 0
-      {101, 0, 0, 102, 165},     // 1
-      {104, 0, 0, 105, 166},     // 2
-      {117, 107, 108, 109, 174}, // 3
-      {107, 123, 0, 124, 0},     // 4
-
-      {125, 106, 0, 0, 167}, // 5
-      {126, 127, 0, 0, 168}, // 6
-      {0, 0, 0, 0, 169},     // 7
-      {128, 129, 0, 0, 0},   // 8
-      {130, 131, 132, 0, 0}, // 9
-
-      {133, 106, 0, 0, 170}, // 10
-      {135, 136, 0, 0, 171}, // 11
-      {139, 140, 0, 0, 172}, // 12
-      {120, 0, 0, 0, 0},     // 13
-      {141, 0, 0, 0, 0},     // 14
-
-      {142, 143, 0, 0, 0},   // 15
-      {144, 145, 0, 0, 173}, // 16
-      {146, 147, 0, 0, 0},   // 17
-      {117, 0, 0, 0, 178},   // 18
-      {148, 0, 0, 0, 0},     // 19
-
-      {0, 0, 0, 0, 0},   // 20
-      {0, 0, 0, 0, 173}, // 21
-      {0, 0, 0, 0, 0},   // 22
-      {0, 0, 0, 0, 178}, // 23
-      {0, 0, 0, 0, 0},   // 24
-
-      {181, 0, 0, 0, 181}, // 25
-      {183, 0, 0, 0, 183}, // 26
-      {184, 0, 0, 0, 184}, // 27
-      {182, 0, 0, 0, 182}, // 28
-      {185, 0, 0, 0, 185}, // 29
-
-      {186, 0, 0, 0, 186}, // 30
-      {187, 0, 0, 0, 187}, // 31
-      {188, 0, 0, 0, 188}, // 32
-      {189, 0, 0, 0, 189}, // 33
-      {190, 0, 0, 0, 190}, // 34
-
-      {191, 0, 0, 0, 191}, // 35
-      {192, 0, 0, 0, 192}, // 36
-      {193, 0, 0, 0, 193}, // 37
-      {194, 0, 0, 0, 194}, // 38
-      {196, 0, 0, 0, 196}, // 39
-
-      {107, 0, 0, 0, 0}, // 40
-      {107, 0, 0, 0, 0}, // 41
-      {107, 0, 0, 0, 0}, // 42
-      {107, 0, 0, 0, 0}, // 43
-      {107, 0, 0, 0, 0}, // 44
-
-      {107, 0, 0, 0, 0}, // 45
-      {107, 0, 0, 0, 0}, // 46
-      {107, 0, 0, 0, 0}, // 47
-      {107, 0, 0, 0, 0}, // 48
-      {107, 0, 0, 0, 0}, // 49
-
-      {107, 0, 0, 0, 0},  // 50
-      {107, 0, 0, 0, 0},  // 51
-      {107, 0, 0, 0, 0},  // 52
-      {107, 0, 0, 0, 0},  // 53
-      {107, 0, 0, 0, 0}}, // 54
-
-     // Set 1
-
-     {{164, 0, 0, 0, 0}, // 0
-      {165, 0, 0, 0, 0}, // 1
-      {166, 0, 0, 0, 0}, // 2
-      {0, 0, 0, 0, 0},   // 3
-      {0, 0, 0, 0, 0},   // 4
-
-      {167, 0, 0, 0, 0}, // 5
-      {168, 0, 0, 0, 0}, // 6
-      {169, 0, 0, 0, 0}, // 7
-      {0, 0, 0, 0, 0},   // 8
-      {0, 0, 0, 0, 0},   // 9
-
-      {170, 0, 0, 0, 0}, // 10
-      {171, 0, 0, 0, 0}, // 11
-      {172, 0, 0, 0, 0}, // 12
-      {0, 0, 0, 0, 0},   // 13
-      {0, 0, 0, 0, 0},   // 14
-
-      {0, 0, 0, 0, 0}, // 15
-      {0, 0, 0, 0, 0}, // 16
-      {0, 0, 0, 0, 0}, // 17
-      {0, 0, 0, 0, 0}, // 18
-      {0, 0, 0, 0, 0}, // 19
-
-      {0, 0, 0, 0, 0}, // 20
-      {0, 0, 0, 0, 0}, // 21
-      {0, 0, 0, 0, 0}, // 22
-      {0, 0, 0, 0, 0}, // 23
-      {0, 0, 0, 0, 0}, // 24
-
-      {0, 0, 0, 0, 0}, // 25
-      {0, 0, 0, 0, 0}, // 26
-      {0, 0, 0, 0, 0}, // 27
-      {0, 0, 0, 0, 0}, // 28
-      {0, 0, 0, 0, 0}, // 29
-
-      {0, 0, 0, 0, 0}, // 30
-      {0, 0, 0, 0, 0}, // 31
-      {0, 0, 0, 0, 0}, // 32
-      {0, 0, 0, 0, 0}, // 33
-      {0, 0, 0, 0, 0}, // 34
-
-      {0, 0, 0, 0, 0}, // 35
-      {0, 0, 0, 0, 0}, // 36
-      {0, 0, 0, 0, 0}, // 37
-      {0, 0, 0, 0, 0}, // 38
-      {0, 0, 0, 0, 0}, // 39
-
-      {0, 0, 0, 0, 0}, // 40
-      {0, 0, 0, 0, 0}, // 41
-      {0, 0, 0, 0, 0}, // 42
-      {0, 0, 0, 0, 0}, // 43
-      {0, 0, 0, 0, 0}, // 44
-
-      {0, 0, 0, 0, 0}, // 45
-      {0, 0, 0, 0, 0}, // 46
-      {0, 0, 0, 0, 0}, // 47
-      {0, 0, 0, 0, 0}, // 48
-      {0, 0, 0, 0, 0}, // 49
-
-      {0, 0, 0, 0, 0},   // 50
-      {0, 0, 0, 0, 0},   // 51
-      {0, 0, 0, 0, 0},   // 52
-      {0, 0, 0, 0, 0},   // 53
-      {0, 0, 0, 0, 0}}}; // 54
+    {'1', '2', '3', 'A', 'M', 'p'},
+    {'4', '5', '6', 'B', 'L', 'q'},
+    {'7', '8', '9', 'C', 'K', 'r'},
+    {'-', '0', '=', 'D', 'J', 's'},
+    {'E', 'F', 'G', 'H', 'I', 't'},
+    {'N', 'O', 'P', 'Q', 'R', 'u'},
+    {'S', 'T', 'U', 'V', 'W', 'v'},
+    {'X', 'Y', 'Z', '!', '@', 'w'},
+    {'a', 'b', 'c', 'd', 'e', 'x'},
+    {'f', 'g', 'h', 'i', 'j', 'y'},
+    {'k', 'l', 'm', 'n', 'o', 'z'}};
 
 String fullKey;
 byte rowPins[ROWS] = {33, 25, 26, 27, 13, 23, 14, 12, 32, 5, 15}; // connect to the row pinouts of the Keypad1
-byte colPins[COLS] = {19, 18, 17, 16, 4};                         // connect to the column pinouts of the Keypad1
+byte colPins[COLS] = {19, 18, 17, 16, 4, 0};                      // connect to the column pinouts of the Keypad1
 
 void DispOff();
 SchedTask taskDispOff(NEVER, ONESHOT, DispOff);
@@ -390,69 +254,69 @@ void CMD_List(int CMD)
                 httpReq("http://192.168.1.153/control?cmd=event,ToggleMCP");
                 break;
         }
-        case 110: // Outlet-01
+        case 110: // Open
+        {
+
+                break;
+        }
+        case 111: // Outlet-01
         {
                 httpReq("http://192.168.1.141/control?cmd=event,Toggle");
                 break;
         }
-        case 111: // Outlet-02
+        case 112: // Outlet-02
         {
                 httpReq("http://192.168.1.142/control?cmd=event,Toggle");
                 break;
         }
-        case 112: // Outlet-03
+        case 113: // Outlet-03
         {
                 httpReq("http://192.168.1.143/control?cmd=event,Toggle");
                 break;
         }
-        case 113: // Open
-        {
-
-                break;
-        }
-        case 114: // Open
-        {
-
-                break;
-        }
-        case 115: // Open
-        {
-
-                break;
-        }
-        case 116: // Outlet-04
+        case 114: // Outlet-04
         {
                 httpReq("http://192.168.1.144/control?cmd=event,Toggle");
                 break;
         }
-        case 117: // Outlet-05
+        case 115: // Outlet-05
         {
                 httpReq("http://192.168.1.145/control?cmd=event,Toggle");
                 break;
         }
-        case 118: // Outlet-06
+        case 116: // Outlet-06
         {
                 httpReq("http://192.168.1.146/control?cmd=event,Toggle");
                 break;
         }
-        case 119: // Outlet-07
+        case 117: // Outlet-07
         {
                 httpReq("http://192.168.1.147/control?cmd=event,Toggle");
                 break;
         }
-        case 120: // Outlet-08
+        case 118: // Outlet-09
         {
                 httpReq("http://192.168.1.148/control?cmd=event,Toggle");
                 break;
         }
-        case 121: // Outlet-09
+        case 119: // Outlet-09
         {
                 httpReq("http://192.168.1.149/control?cmd=event,Toggle");
                 break;
         }
-        case 122: // Outlet-10
+        case 120: // Outlet-10
         {
                 httpReq("http://192.168.1.140/control?cmd=event,Toggle");
+                break;
+        }
+        case 121: // Open
+        {
+
+                break;
+        }
+        case 122: // Open
+        {
+
                 break;
         }
         case 123: // CMD_Home
@@ -541,7 +405,6 @@ void CMD_List(int CMD)
         }
         case 138: // Open
         {
-
                 break;
         }
         case 139: // Kodi Select
@@ -601,82 +464,65 @@ void CMD_List(int CMD)
                 bleKeyboard.releaseAll();
                 break;
         }
-        case 149: // KEY_DELETE
+        case 149: // Open
         {
-                bleKeyboard.write(KEY_DELETE);
+                bleKeyboard.write(KEY_NUM_1);
                 break;
         }
-        case 150: // KEY_S_TAB
+        case 150: // Open
         {
-                bleKeyboard.press(KEY_LEFT_SHIFT);
-                bleKeyboard.press(KEY_TAB);
-                delay(keyReltime);
-                bleKeyboard.releaseAll();
                 break;
         }
-        case 151: // KEY_ESC
+        case 151: // Open
         {
-                bleKeyboard.write(KEY_ESC);
                 break;
         }
-        case 152: // KEY_TAB
+        case 152: // Open
         {
-                bleKeyboard.write(KEY_TAB);
                 break;
         }
-        case 153: // KEY_INSERT
+        case 153: // Open
         {
-                bleKeyboard.write(KEY_INSERT);
                 break;
         }
-        case 154: // KEY_HOME
+        case 154: // Open
         {
-                bleKeyboard.write(KEY_HOME);
                 break;
         }
-        case 155: // KEY_BACKSPACE
+        case 155: // Open
         {
-                bleKeyboard.write(KEY_BACKSPACE);
                 break;
         }
-        case 156: // KEY_UP_ARROW
+        case 156: // Open
         {
-                bleKeyboard.write(KEY_UP_ARROW);
                 break;
         }
-        case 157: // KEY_RETURN
+        case 157: // Open
         {
-                bleKeyboard.write(KEY_RETURN);
                 break;
         }
-        case 158: // KEY_PAGE_UP
+        case 158: // Open
         {
-                bleKeyboard.write(KEY_PAGE_UP);
                 break;
         }
-        case 159: // KEY_END
+        case 159: // Open
         {
-                bleKeyboard.write(KEY_END);
                 break;
         }
-        case 160: // KEY_LEFT_ARROW
+        case 160: // Open
         {
-                bleKeyboard.write(KEY_LEFT_ARROW);
                 break;
         }
-        case 161: // (KEY_DOWN_ARROW
+        case 161: // Open
         {
-                bleKeyboard.write(KEY_DOWN_ARROW);
                 break;
         }
-        case 162: // KEY_RIGHT_ARROW
+        case 162: // Open
         {
-                bleKeyboard.write(KEY_RIGHT_ARROW);
                 break;
         }
-        case 163: // KEY_PAGE_DOWN
+        case 163: // Open
         {
-                bleKeyboard.write(KEY_PAGE_DOWN);
                 break;
         }
         case 164: // KEY_NUM_1
@@ -759,9 +605,8 @@ void CMD_List(int CMD)
                 bleKeyboard.write(KEY_NUM_ENTER);
                 break;
         }
-        case 180: // KEY_BACKSPACE
+        case 180: // Open
         {
-                bleKeyboard.write(KEY_BACKSPACE);
                 break;
         }
         case 181: // KEY_DELETE
@@ -904,15 +749,68 @@ void CMD_List(int CMD)
         }
         case 208: // inch
         {
-                bleKeyboard.print("inch");
+                bleKeyboard.print(" inch ");
                 break;
         }
         case 209: // mm
         {
-                bleKeyboard.print("mm");
+                bleKeyboard.print(" mm ");
                 break;
         }
         break;
+        case 210: // Shift 1
+        {
+                Shift = 1;
+                // digitalWrite(ledPin, HIGH);
+                UpdateOled(Mode);
+                break;
+        }
+        case 211: // Shift 2
+        {
+                Shift = 2;
+                // digitalWrite(ledPin, HIGH);
+                UpdateOled(Mode);
+                break;
+        }
+        case 212: // Shift 3
+        {
+                Shift = 3;
+                // digitalWrite(ledPin, HIGH);
+                UpdateOled(Mode);
+                break;
+        }
+        case 213: // Keylock
+        {
+                if (Shift != 4)
+                        Shift = 4;
+                else
+                        Shift = 0;
+                // digitalWrite(ledPin, HIGH);
+                UpdateOled(Mode);
+                break;
+        }
+        case 214: // Shift  Lock
+        {
+                Lock = (!Lock);
+                if (!Lock)
+                {
+                        Shift = 0;
+                        Mode = 0;
+                        // digitalWrite(ledPin, LOW);
+                }
+                UpdateOled(Mode);
+                break;
+        }
+        case 215: // Mode/Set
+        {
+                set = --set;
+                if (set < 0)
+                {
+                        set = setmax;
+                }
+                UpdateOled(Mode);
+                break;
+        }
         }
 }
 
@@ -999,1015 +897,6 @@ void keyCode() // Mode 2
         }
 }
 
-void pcKeypad() // Mode 3
-{
-
-        switch (KeyPressed)
-        {
-        case '1': //    KEY_NUM_1 | KEY_F13 | Open | Open
-        {
-                switch (Shift)
-                {
-                case 0:
-                {
-                        bleKeyboard.write(KEY_NUM_1);
-                        break;
-                }
-                case 1:
-                {
-                        bleKeyboard.write(KEY_F13);
-                        break;
-                }
-                case 2:
-                {
-
-                        break;
-                }
-                case 3:
-                {
-
-                        break;
-                }
-                }
-        }
-        break;
-        case '2': //    KEY_NUM_2 | KEY_F14 | Open | Open
-        {
-                switch (Shift)
-                {
-                case 0:
-                {
-                        bleKeyboard.write(KEY_NUM_2);
-                        break;
-                }
-                case 1:
-                {
-                        bleKeyboard.write(KEY_F14);
-                        break;
-                }
-                case 2:
-                {
-
-                        break;
-                }
-                case 3:
-                {
-
-                        break;
-                }
-                }
-        }
-        break;
-        case '3': //    KEY_NUM_3 | KEY_F15 | Open | Open
-        {
-                switch (Shift)
-                {
-                case 0:
-                {
-                        bleKeyboard.write(KEY_NUM_3);
-                        break;
-                }
-                case 1:
-                {
-                        bleKeyboard.write(KEY_F15);
-                        break;
-                }
-                case 2:
-                {
-
-                        break;
-                }
-                case 3:
-                {
-
-                        break;
-                }
-                }
-        }
-        break;
-        case 'A': //   KEY_NUM_ASTERISK | Open | Open | Open
-        {
-                switch (Shift)
-                {
-                case 0:
-                {
-                        bleKeyboard.write(KEY_NUM_ASTERISK);
-                        break;
-                }
-                case 1:
-                {
-
-                        break;
-                }
-                case 2:
-                {
-
-                        break;
-                }
-                case 3:
-                {
-
-                        break;
-                }
-                }
-        }
-        break;
-        case 'M': //    " mm" | Open | Open | Open
-        {
-                switch (Shift)
-                {
-                case 0:
-                {
-                        bleKeyboard.print(" mm");
-                        break;
-                }
-                case 1:
-                {
-
-                        break;
-                }
-                case 2:
-                {
-
-                        break;
-                }
-                case 3:
-                {
-
-                        break;
-                }
-                }
-        }
-        break;
-
-        case '4': //    KEY_NUM_4 | KEY_F16 | Open | Open
-        {
-                switch (Shift)
-                {
-                case 0:
-                {
-                        bleKeyboard.write(KEY_NUM_4);
-                        break;
-                }
-                case 1:
-                {
-                        bleKeyboard.write(KEY_F16);
-                        break;
-                }
-                case 2:
-                {
-
-                        break;
-                }
-                case 3:
-                {
-
-                        break;
-                }
-                }
-        }
-        break;
-        case '5': //    KEY_NUM_5 | KEY_F17 | Open | Open
-        {
-                switch (Shift)
-                {
-                case 0:
-                {
-                        bleKeyboard.write(KEY_NUM_5);
-                        break;
-                }
-                case 1:
-                {
-                        bleKeyboard.write(KEY_F17);
-                        break;
-                }
-                case 2:
-                {
-
-                        break;
-                }
-                case 3:
-                {
-
-                        break;
-                }
-                }
-        }
-        break;
-        case '6': //    KEY_NUM_6 | KEY_F18 | Open | Open
-        {
-                switch (Shift)
-                {
-                case 0:
-                {
-                        bleKeyboard.write(KEY_NUM_6);
-                        break;
-                }
-                case 1:
-                {
-                        bleKeyboard.write(KEY_F18);
-                        break;
-                }
-                case 2:
-                {
-
-                        break;
-                }
-                case 3:
-                {
-
-                        break;
-                }
-                }
-        }
-        break;
-        case 'B': //    KEY_NUM_MINUS | Open | Open | Open
-        {
-                switch (Shift)
-                {
-                case 0:
-                {
-                        bleKeyboard.write(KEY_NUM_MINUS);
-                        break;
-                }
-                case 1:
-                {
-
-                        break;
-                }
-                case 2:
-                {
-
-                        break;
-                }
-                case 3:
-                {
-
-                        break;
-                }
-                }
-        }
-        break;
-        case 'L': //    " inch" | Open | Open | Open
-        {
-                switch (Shift)
-                {
-                case 0:
-                {
-                        bleKeyboard.print(" inch");
-                        break;
-                }
-                case 1:
-                {
-
-                        break;
-                }
-                case 2:
-                {
-
-                        break;
-                }
-                case 3:
-                {
-
-                        break;
-                }
-                }
-        }
-        break;
-
-        case '7': //    KEY_NUM_7 | KEY_F19 | Open | Open
-        {
-                switch (Shift)
-                {
-                case 0:
-                {
-                        bleKeyboard.write(KEY_NUM_7);
-                        break;
-                }
-                case 1:
-                {
-                        bleKeyboard.write(KEY_F19);
-                        break;
-                }
-                case 2:
-                {
-
-                        break;
-                }
-                case 3:
-                {
-
-                        break;
-                }
-                }
-        }
-        break;
-        case '8': //    KEY_NUM_8 | KEY_F20 | Open | Open
-        {
-                switch (Shift)
-                {
-                case 0:
-                {
-                        bleKeyboard.write(KEY_NUM_8);
-                        break;
-                }
-                case 1:
-                {
-                        bleKeyboard.write(KEY_F20);
-                        break;
-                }
-                case 2:
-                {
-
-                        break;
-                }
-                case 3:
-                {
-
-                        break;
-                }
-                }
-        }
-        break;
-        case '9': //    KEY_NUM_9 | KEY_F21 | Open | Open
-        {
-                switch (Shift)
-                {
-                case 0:
-                {
-                        bleKeyboard.write(KEY_NUM_9);
-                        break;
-                }
-                case 1:
-                {
-                        bleKeyboard.write(KEY_F21);
-                        break;
-                }
-                case 2:
-                {
-
-                        break;
-                }
-                case 3:
-                {
-
-                        break;
-                }
-                }
-        }
-        break;
-        case 'C': //    KEY_NUM_PLUS | Open | Open | Open
-        {
-                switch (Shift)
-                {
-                case 0:
-                {
-                        bleKeyboard.write(KEY_NUM_PLUS);
-                        break;
-                }
-                case 1:
-                {
-
-                        break;
-                }
-                case 2:
-                {
-
-                        break;
-                }
-                case 3:
-                {
-
-                        break;
-                }
-                }
-        }
-        break;
-        case 'K': //    KEY_TAB | Open | Open | KEY_LEFT_SHIFT + KEY_TAB
-        {
-                switch (Shift)
-                {
-                case 0:
-                {
-                        bleKeyboard.write(KEY_TAB);
-                        break;
-                }
-                case 1:
-                {
-
-                        break;
-                }
-                case 2:
-                {
-
-                        break;
-                }
-                case 3:
-                {
-                        bleKeyboard.press(KEY_LEFT_SHIFT);
-                        bleKeyboard.press(KEY_TAB);
-                        delay(keyReltime);
-                        bleKeyboard.releaseAll();
-                        break;
-                }
-                }
-        }
-        break;
-
-        case '-': //    KEY_NUM_PERIOD | KEY_F22 | Open | Open
-        {
-                switch (Shift)
-                {
-                case 0:
-                {
-                        bleKeyboard.write(KEY_NUM_PERIOD);
-                        break;
-                }
-                case 1:
-                {
-                        bleKeyboard.write(KEY_F22);
-                        break;
-                }
-                case 2:
-                {
-
-                        break;
-                }
-                case 3:
-                {
-
-                        break;
-                }
-                }
-        }
-        break;
-        case '0': //    KEY_NUM_0 | KEY_F23 | Open | Open
-        {
-                switch (Shift)
-                {
-                case 0:
-                {
-                        bleKeyboard.write(KEY_NUM_0);
-                        break;
-                }
-                case 1:
-                {
-
-                        bleKeyboard.write(KEY_F23);
-                        break;
-                }
-                case 2:
-                {
-
-                        break;
-                }
-                case 3:
-                {
-
-                        break;
-                }
-                }
-        }
-        break;
-        case '=': //    KEY_NUM_PERIOD | KEY_F24 | Open | Open
-        {
-                switch (Shift)
-                {
-                case 0:
-                {
-                        bleKeyboard.write(KEY_NUM_PERIOD);
-                        break;
-                }
-                case 1:
-                {
-                        bleKeyboard.write(KEY_F24);
-                        break;
-                }
-                case 2:
-                {
-
-                        break;
-                }
-                case 3:
-                {
-
-                        break;
-                }
-                }
-        }
-        break;
-        case 'D': //    KEY_NUM_SLASH | Open | Open | Open
-        {
-                switch (Shift)
-                {
-                case 0:
-                {
-                        bleKeyboard.write(KEY_NUM_SLASH);
-                        break;
-                }
-                case 1:
-                {
-
-                        break;
-                }
-                case 2:
-                {
-
-                        break;
-                }
-                case 3:
-                {
-
-                        break;
-                }
-                }
-        }
-        break;
-        case 'J': //    KEY_NUM_ENTER | Open | Open | Open
-        {
-                switch (Shift)
-                {
-                case 0:
-                {
-                        bleKeyboard.write(KEY_NUM_ENTER);
-                        break;
-                }
-                case 1:
-                {
-
-                        break;
-                }
-                case 2:
-                {
-
-                        break;
-                }
-                case 3:
-                {
-
-                        break;
-                }
-                }
-        }
-        break;
-
-        case 'H': //    KEY_BACKSPACE | Open | Open | Open
-        {
-                switch (Shift)
-                {
-                case 0:
-                {
-                        bleKeyboard.write(KEY_BACKSPACE);
-                        break;
-                }
-                case 1:
-                {
-
-                        break;
-                }
-                case 2:
-                {
-
-                        break;
-                }
-                case 3:
-                {
-
-                        break;
-                }
-                }
-        }
-        break;
-
-        case 'N': //   KEY_DELETE | Shift 1: Open | Shift 2: Open | Shift 3: Open
-        {
-                switch (Shift)
-                {
-                case 0:
-                {
-                        bleKeyboard.write(KEY_DELETE);
-                        break;
-                }
-                case 1:
-                {
-
-                        break;
-                }
-                case 2:
-                {
-
-                        break;
-                }
-                case 3:
-                {
-
-                        break;
-                }
-                }
-        }
-        break;
-        case 'O': //    SHIFT_KEY_TAB | Shift 1: Open | Shift 2: Open | Shift 3: Open
-        {
-                switch (Shift)
-                {
-                case 0:
-                {
-                        bleKeyboard.press(KEY_LEFT_SHIFT);
-                        bleKeyboard.press(KEY_TAB);
-                        delay(keyReltime);
-                        bleKeyboard.releaseAll();
-                        break;
-                }
-                case 1:
-                {
-
-                        break;
-                }
-                case 2:
-                {
-
-                        break;
-                }
-                case 3:
-                {
-
-                        break;
-                }
-                }
-        }
-        break;
-        case 'P': //    KEY_ESC | Shift 1: Open | Shift 2: Open | Shift 3: Open
-        {
-                switch (Shift)
-                {
-                case 0:
-                {
-                        bleKeyboard.write(KEY_ESC);
-                        break;
-                }
-                case 1:
-                {
-
-                        break;
-                }
-                case 2:
-                {
-
-                        break;
-                }
-                case 3:
-                {
-
-                        break;
-                }
-                }
-        }
-        break;
-        case 'Q': //    KEY_TAB | Shift 1: Open | Shift 2: Open | Shift 3: Open
-        {
-                switch (Shift)
-                {
-                case 0:
-                {
-                        bleKeyboard.write(KEY_TAB);
-                        break;
-                }
-                case 1:
-                {
-
-                        break;
-                }
-                case 2:
-                {
-
-                        break;
-                }
-                case 3:
-                {
-
-                        break;
-                }
-                }
-        }
-        break;
-        case 'R': //    KEY_INSERT | Shift 1: Open | Shift 2: Open | Shift 3: Open
-        {
-                switch (Shift)
-                {
-                case 0:
-                {
-                        bleKeyboard.write(KEY_INSERT);
-                        break;
-                }
-                case 1:
-                {
-
-                        break;
-                }
-                case 2:
-                {
-
-                        break;
-                }
-                case 3:
-                {
-
-                        break;
-                }
-                }
-        }
-        break;
-
-        case 'S': //        KEY_HOME | Shift 1: Open | Shift 2: Open | Shift 3: Open
-        {
-                switch (Shift)
-                {
-                case 0:
-                {
-                        bleKeyboard.write(KEY_HOME);
-                        break;
-                }
-                case 1:
-                {
-
-                        break;
-                }
-                case 2:
-                {
-
-                        break;
-                }
-                case 3:
-                {
-
-                        break;
-                }
-                }
-        }
-        break;
-        case 'T': //        KEY_BACKSPACE | Shift 1: Open | Shift 2: Open | Shift 3: Open
-        {
-                switch (Shift)
-                {
-                case 0:
-                {
-                        bleKeyboard.write(KEY_BACKSPACE);
-                        break;
-                }
-                case 1:
-                {
-
-                        break;
-                }
-                case 2:
-                {
-
-                        break;
-                }
-                case 3:
-                {
-
-                        break;
-                }
-                }
-        }
-        break;
-        case 'U': //        KEY_UP_ARROW | Shift 1: Open | Shift 2: Open | Shift 3: Open
-        {
-                switch (Shift)
-                {
-                case 0:
-                {
-                        bleKeyboard.write(KEY_UP_ARROW);
-                        break;
-                }
-                case 1:
-                {
-
-                        break;
-                }
-                case 2:
-                {
-
-                        break;
-                }
-                case 3:
-                {
-
-                        break;
-                }
-                }
-        }
-        break;
-        case 'V': //        KEY_RETURN | Shift 1: Open | Shift 2: Open | Shift 3: Open
-        {
-                switch (Shift)
-                {
-                case 0:
-                {
-                        bleKeyboard.write(KEY_RETURN);
-                        break;
-                }
-                case 1:
-                {
-
-                        break;
-                }
-                case 2:
-                {
-
-                        break;
-                }
-                case 3:
-                {
-
-                        break;
-                }
-                }
-        }
-        break;
-        case 'W': //        KEY_PAGE_UP | Shift 1: Open | Shift 2: Open | Shift 3: Open
-        {
-                switch (Shift)
-                {
-                case 0:
-                {
-                        bleKeyboard.write(KEY_PAGE_UP);
-                        break;
-                }
-                case 1:
-                {
-
-                        break;
-                }
-                case 2:
-                {
-
-                        break;
-                }
-                case 3:
-                {
-
-                        break;
-                }
-                }
-        }
-        break;
-
-        case 'X': //        KEY_END | Shift 1: Open | Shift 2: Open | Shift 3: Open
-        {
-                switch (Shift)
-                {
-                case 0:
-                {
-                        bleKeyboard.write(KEY_END);
-                        break;
-                }
-                case 1:
-                {
-
-                        break;
-                }
-                case 2:
-                {
-
-                        break;
-                }
-                case 3:
-                {
-
-                        break;
-                }
-                }
-        }
-        break;
-        case 'Y': //        KEY_LEFT_ARROW | Shift 1: Open | Shift 2: Open | Shift 3: Open
-        {
-                switch (Shift)
-                {
-                case 0:
-                {
-                        bleKeyboard.write(KEY_LEFT_ARROW);
-                        break;
-                }
-                case 1:
-                {
-
-                        break;
-                }
-                case 2:
-                {
-
-                        break;
-                }
-                case 3:
-                {
-
-                        break;
-                }
-                }
-        }
-        break;
-        case 'Z': //        KEY_DOWN_ARROW | Shift 1: Open | Shift 2: Open | Shift 3: Open
-        {
-                switch (Shift)
-                {
-                case 0:
-                {
-                        bleKeyboard.write(KEY_DOWN_ARROW);
-                        break;
-                }
-                case 1:
-                {
-
-                        break;
-                }
-                case 2:
-                {
-
-                        break;
-                }
-                case 3:
-                {
-
-                        break;
-                }
-                }
-        }
-        break;
-        case '!': //        KEY_RIGHT_ARROW | Shift 1: Open | Shift 2: Open | Shift 3: Open
-        {
-                switch (Shift)
-                {
-                case 0:
-                {
-                        bleKeyboard.write(KEY_RIGHT_ARROW);
-                        break;
-                }
-                case 1:
-                {
-
-                        break;
-                }
-                case 2:
-                {
-
-                        break;
-                }
-                case 3:
-                {
-
-                        break;
-                }
-                }
-        }
-        break;
-        case '@': //        KEY_PAGE_DOWN | Shift 1: Open | Shift 2: Open | Shift 3: Open
-        {
-                switch (Shift)
-                {
-                case 0:
-                {
-                        bleKeyboard.write(KEY_PAGE_DOWN);
-                        break;
-                }
-                case 1:
-                {
-
-                        break;
-                }
-                case 2:
-                {
-
-                        break;
-                }
-                case 3:
-                {
-
-                        break;
-                }
-                }
-        }
-        break;
-        default:
-        {
-                break;
-        }
-        }
-
-        delay(keyReltime);
-        bleKeyboard.releaseAll();
-        display.clearDisplay();
-        display.setCursor(0, 0);
-        display.setTextSize(2);
-        display.setTextColor(SSD1306_WHITE);
-        display.print("Pressed: ");
-        display.println(KeyPressed);
-        display.display();
-        taskDispOff.setNext(dispSleepT);
-}
-
 void UpdateOled(int Mode)
 {
         display.clearDisplay();
@@ -2017,7 +906,7 @@ void UpdateOled(int Mode)
         display.println(Mode_Lables[Mode]);
         display.print("CMD: ");
         display.println(SET[set][Kcode][Shift]);
-        display.print("LK: ");
+        display.print("LK:");
         display.print(Lock);
         display.print(" ST:");
         display.println(set);
@@ -2126,86 +1015,6 @@ void loop()
                                 {
                                         switch (Keypad1.key[i].kchar)
                                         {
-                                        case 'E': // Shift 1
-                                        {
-                                                Shift = 1;
-                                                // digitalWrite(ledPin, HIGH);
-                                                UpdateOled(Mode);
-                                                break;
-                                        }
-                                        case 'F': // Shift 2
-                                        {
-                                                Shift = 2;
-                                                // digitalWrite(ledPin, HIGH);
-                                                UpdateOled(Mode);
-                                                break;
-                                        }
-                                        case 'G': // Shift 3
-                                        {
-                                                Shift = 3;
-                                                // digitalWrite(ledPin, HIGH);
-                                                UpdateOled(Mode);
-                                                break;
-                                        }
-                                        case 'H': // Lock
-                                        {
-                                                Lock = (!Lock);
-                                                if (!Lock)
-                                                {
-                                                        Shift = 0;
-                                                        Mode = 0;
-                                                        // digitalWrite(ledPin, LOW);
-                                                }
-                                                UpdateOled(Mode);
-                                                break;
-                                        }
-                                        case 'I': // Mode
-                                        {
-
-                                                switch (Shift)
-                                                {
-                                                case 0:
-                                                {
-                                                        // Mode = 0;
-                                                        set = ++set;
-                                                        if (set > setmax)
-                                                        {
-                                                                set = 0;
-                                                        }
-                                                        UpdateOled(Mode);
-                                                        break;
-                                                        break;
-                                                }
-                                                case 1:
-                                                {
-                                                        Mode = 1;
-                                                        break;
-                                                }
-                                                case 2:
-                                                {
-                                                        Mode = 2;
-                                                        break;
-                                                }
-                                                case 3:
-                                                {
-                                                        Mode = 3;
-                                                        break;
-                                                }
-                                                case 4:
-                                                {
-                                                        Mode = 4;
-                                                        break;
-                                                }
-                                                }
-
-                                                // Mode = ++Mode;
-                                                // if (Mode > ModeMax)
-                                                // {
-                                                //         Mode = 0;
-                                                // }
-                                                UpdateOled(Mode);
-                                                break;
-                                        }
                                         default:
                                         {
                                                 KeyPressed = Keypad1.key[i].kchar;
@@ -2214,7 +1023,6 @@ void loop()
                                                 {
                                                 case 0: // Main
                                                 {
-                                                        set = 0;
                                                         CMD_List(SET[set][Kcode][Shift]);
                                                         UpdateOled(Mode);
                                                         break;
@@ -2231,16 +1039,13 @@ void loop()
                                                 }
                                                 case 3: // PC Keypad
                                                 {
-                                                        set = 0;
                                                         CMD_List(SET[set][Kcode][4]);
                                                         UpdateOled(Mode);
                                                         // pcKeypad();
                                                         break;
                                                 }
-                                                case 4: // Testing 1
+                                                case 4: // Service
                                                 {
-                                                        set = 1;
-                                                        CMD_List(SET[set][Kcode][Shift]);
                                                         UpdateOled(Mode);
                                                         break;
                                                 }
@@ -2253,11 +1058,13 @@ void loop()
 
                                 case RELEASED:
                                 {
-                                        switch (Keypad1.key[i].kchar)
+                                        Kcode = Keypad1.key[i].kcode;
+                                        switch (Kcode)
+
                                         {
-                                        case 'E': // Shift 1
-                                        case 'F': // Shift 2
-                                        case 'G': // Shift 3
+                                        case 17: // Shift 1
+                                        case 23: // Shift 2
+                                        case 29: // Shift 3
                                         {
                                                 if (Lock)
                                                 {
@@ -2268,15 +1075,6 @@ void loop()
                                                         Shift = 0;
                                                 // digitalWrite(ledPin, LOW);
                                                 UpdateOled(Mode);
-                                                break;
-                                        }
-                                        case 'H': // Lock
-                                        {
-
-                                                break;
-                                        }
-                                        case 'I': // Mode
-                                        {
                                                 break;
                                         }
                                         }
