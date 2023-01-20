@@ -141,7 +141,9 @@
                 "d:\\iot\\arduino\\portable\\packages\\esp32\\tools\\xtensa-esp32-elf-gcc\\1.22.0-97-gc752ad5-5.2.0\\xtensa-esp32-elf\\sysroot\\usr\\include",
                 "D:/IOT/arduino/portable/sketchbook/libraries/PS2KeyAdvanced/src",
                 "D:/IOT/arduino/portable/sketchbook/libraries/PS2KeyMap/src",
-                "D:\\IOT\\arduino\\portable\\sketchbook\\libraries\\Ai_Esp32_Rotary_Encoder\\src"
+                "D:\\IOT\\arduino\\portable\\sketchbook\\libraries\\Ai_Esp32_Rotary_Encoder\\src",
+                "d:\\IOT\\arduino\\portable\\sketchbook\\libraries\\ESP32-BLE-MIDI\\src",
+                "D:\\IOT\\arduino\\portable\\sketchbook\\libraries\\NimBLE-Arduino-release-1.4\\src"
             ],
             "forcedInclude": [
                 "D:\\IOT\\arduino\\portable\\packages\\esp32\\hardware\\esp32\\1.0.6\\cores\\esp32\\Arduino.h"

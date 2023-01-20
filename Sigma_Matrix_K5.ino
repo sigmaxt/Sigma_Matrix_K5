@@ -4,9 +4,10 @@
 #include <WiFi.h>
 #include <HTTPClient.h>
 #include <Wire.h>
-#include <PubSubClient.h>     // https://github.com/knolleary/pubsubclient
-#include <Keypad.h>           // https://github.com/Chris--A/Keypad
-#include <BleKeyboard.h>      // https://github.com/T-vK/ESP32-BLE-Keyboard
+#include <PubSubClient.h> // https://github.com/knolleary/pubsubclient
+#include <Keypad.h>       // https://github.com/Chris--A/Keypad
+#include <BleKeyboard.h>  // https://github.com/T-vK/ESP32-BLE-Keyboard
+// #include <BLEMidi.h>          // https://github.com/max22-/ESP32-BLE-MIDI
 #include <Adafruit_SSD1306.h> // https://github.com/adafruit/Adafruit_SSD1306 https://github.com/adafruit/Adafruit-GFX-Library
 #include <SchedTask.h>        // https://github.com/Nospampls/SchedTask
 // #include "SPIFFS.h"
@@ -17,13 +18,13 @@ int i;
 int Lock = 0;
 int Shift = 0;
 int dispSleepT = 5000;
-int keyReltime = 10;
+int keyReltime = 50;
 bool MQTT = true;
 int set = 0;
 int setmax = 2;
 int Mode = 0;
-int ModeMax = 4;
-String Mode_Lables[5] = {"Macro", "Single Key", "key Code", "PC Keypad", "Service"};
+int ModeMax = 5;
+String Mode_Lables[6] = {"Macro", "Single Key", "key Code", "PC Keypad", "Service", "ListNav"};
 String Shifted;
 String Unshifted;
 unsigned long loopCount;
@@ -294,7 +295,7 @@ void CMD_List(int CMD)
                 httpReq("http://192.168.1.147/control?cmd=event,Toggle");
                 break;
         }
-        case 118: // Outlet-09
+        case 118: // Outlet-08
         {
                 httpReq("http://192.168.1.148/control?cmd=event,Toggle");
                 break;
@@ -309,14 +310,17 @@ void CMD_List(int CMD)
                 httpReq("http://192.168.1.140/control?cmd=event,Toggle");
                 break;
         }
-        case 121: // Open
+        case 121: // Bitwarden
         {
-
+                bleKeyboard.press(KEY_LEFT_CTRL);
+                bleKeyboard.press(KEY_LEFT_SHIFT);
+                bleKeyboard.press('l');
+                delay(keyReltime);
+                bleKeyboard.releaseAll();
                 break;
         }
         case 122: // Open
         {
-
                 break;
         }
         case 123: // CMD_Home
@@ -420,8 +424,7 @@ void CMD_List(int CMD)
         case 141: // ReDo
         {
                 bleKeyboard.press(KEY_LEFT_CTRL);
-                bleKeyboard.press(KEY_LEFT_SHIFT);
-                bleKeyboard.press('z');
+                bleKeyboard.press('y');
                 delay(keyReltime);
                 bleKeyboard.releaseAll();
                 break;
@@ -811,6 +814,54 @@ void CMD_List(int CMD)
                 UpdateOled(Mode);
                 break;
         }
+        case 216: // Space
+        {
+                bleKeyboard.print(" ");
+                break;
+        }
+        case 217: // Select All
+        {
+                bleKeyboard.press(KEY_LEFT_CTRL);
+                bleKeyboard.press('a');
+                delay(keyReltime);
+                bleKeyboard.releaseAll();
+                break;
+        }
+        case 218: // Single Monitor
+        {
+                bleKeyboard.press(KEY_LEFT_GUI);
+                bleKeyboard.press('p');
+                delay(keyReltime);
+                bleKeyboard.releaseAll();
+                bleKeyboard.write(KEY_HOME);
+                bleKeyboard.write(KEY_NUM_ENTER);
+                bleKeyboard.write(KEY_ESC);
+                break;
+        }
+        case 219: // Second Monitor
+        {
+                bleKeyboard.press(KEY_LEFT_GUI);
+                bleKeyboard.press('p');
+                delay(keyReltime);
+                bleKeyboard.releaseAll();
+                bleKeyboard.write(KEY_END);
+                bleKeyboard.write(KEY_NUM_ENTER);
+                bleKeyboard.write(KEY_ESC);
+                break;
+        }
+        case 220: // Extend Monitor
+        {
+                bleKeyboard.press(KEY_LEFT_GUI);
+                bleKeyboard.press('p');
+                delay(keyReltime);
+                bleKeyboard.releaseAll();
+                bleKeyboard.write(KEY_HOME);
+                bleKeyboard.write(KEY_DOWN_ARROW);
+                bleKeyboard.write(KEY_DOWN_ARROW);
+                bleKeyboard.write(KEY_NUM_ENTER);
+                bleKeyboard.write(KEY_ESC);
+                break;
+        }
         }
 }
 
@@ -895,6 +946,10 @@ void keyCode() // Mode 2
                 display.display();
                 taskDispOff.setNext(-1);
         }
+}
+
+void ListNav()
+{
 }
 
 void UpdateOled(int Mode)
@@ -1049,6 +1104,11 @@ void loop()
                                                         UpdateOled(Mode);
                                                         break;
                                                 }
+                                                case 5: // ListNav
+                                                {
+                                                        ListNav();
+                                                        break;
+                                                }
                                                 }
                                                 break;
                                         }
@@ -1062,9 +1122,9 @@ void loop()
                                         switch (Kcode)
 
                                         {
-                                        case 17: // Shift 1
-                                        case 23: // Shift 2
-                                        case 29: // Shift 3
+                                        case 11: // Shift 1
+                                        case 17: // Shift 2
+                                        case 23: // Shift 3
                                         {
                                                 if (Lock)
                                                 {
