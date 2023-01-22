@@ -806,10 +806,10 @@ void CMD_List(int CMD)
         }
         case 215: // Mode/Set
         {
-                set = --set;
-                if (set < 0)
+                set = ++set;
+                if (set > setmax)
                 {
-                        set = setmax;
+                        set = 0;
                 }
                 UpdateOled(Mode);
                 break;
