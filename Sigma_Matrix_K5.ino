@@ -870,7 +870,7 @@ void singleKey() //  Mode 1
         char Key1 = Keypad1.key[i].kchar;
         fullKey = Key1;
         fullKey.toCharArray(KeyMQTT, fullKey.length() + 1);
-        if (Key1 != NULL)
+        if (Key1 != '\0')
         {
                 switch (Shift)
                 {
@@ -933,7 +933,7 @@ void keyCode() // Mode 2
                 fullKey = "";
                 taskDispOff.setNext(dispSleepT);
         }
-        else if (Key1 != NULL)
+        else if (Key1 != '\0')
         {
                 fullKey += Key1;
                 display.clearDisplay();
